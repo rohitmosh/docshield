@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocShield - Odisha Hydro Power Corporation DMS</title>
+  <link rel="stylesheet" href="index.css">
+  <meta name="description" content="Secure Document Management System for Odisha Hydro Power Corporation (OHPC). Access public records and manage confidential enterprise workflows.">
+</head>
+<body>
+
+  <!-- App Wrapper -->
+  <div id="app">
+
+    <!-- ================= PUBLIC PORTAL WRAPPER ================= -->
+    <div id="public-layout">
+      <!-- Public Header -->
+      <header class="public-header">
+        <div class="nav-container">
+          <div class="logo-group">
+            <a href="#home" class="logo-brand">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>DocShield</span>
+            </a>
+            <div class="logo-separator"></div>
+            <div class="logo-ohpc">
+              <!-- Inline SVG for OHPC logo/badge representation -->
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#083B8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span>OHPC Portal</span>
+            </div>
+          </div>
+          <nav class="public-menu">
+            <a href="#home" class="menu-link active" data-route="home">Home</a>
+            <a href="#public-documents" class="menu-link" data-route="public-documents">Public Documents</a>
+            <a href="#departments" class="menu-link" data-route="departments">Departments</a>
+            <a href="#about" class="menu-link" data-route="about">About</a>
+            <a href="#contact" class="menu-link" data-route="contact">Contact</a>
+            <a href="#login" class="btn-login-nav">Sign In</a>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Public Views Container -->
+      <main id="public-views-container">
+        
+        <!-- View: Home -->
+        <section id="view-home" class="public-view">
+          <div class="hero-section">
+            <div class="hero-container">
+              <div class="badge-tagline">Secure Corporate Repository</div>
+              <h1 class="hero-title">Odisha Hydro Power Corporation <span>DocShield</span></h1>
+              <p class="hero-subtitle">Access public utilities, project declarations, notifications, and secure corporate records through our unified regulatory compliance platform.</p>
+              <div class="hero-actions">
+                <a href="#public-documents" class="btn-primary">Browse Public Records</a>
+                <a href="#login" class="btn-secondary">Internal Log In</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistics Section -->
+          <div class="stats-section">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="stat-info">
+                  <h3 id="stat-public-docs">148</h3>
+                  <p>Public Documents</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="stat-info">
+                  <h3>6</h3>
+                  <p>Key Departments</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div class="stat-info">
+                  <h3>12 Yrs</h3>
+                  <p>Archived History</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="stat-info">
+                  <h3>99.9%</h3>
+                  <p>Audit Compliance</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Grid for Recent Docs and Announcements -->
+          <div class="home-row">
+            <div class="section-card">
+              <div class="section-header-row">
+                <h3 class="section-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                  Recent Public Releases
+                </h3>
+                <a href="#public-documents" class="btn-text-action">View All Records &rarr;</a>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Document Name</th>
+                      <th>Department</th>
+                      <th>Publish Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="home-recent-docs-table">
+                    <!-- Dynamic Rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <h3 class="section-title" style="margin-bottom: 1.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+                Announcements
+              </h3>
+              <div class="announcement-list" id="home-announcements-list">
+                <!-- Dynamic Items -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- View: Public Documents -->
+        <section id="view-public-documents" class="public-view hidden">
+          <div class="public-docs-layout">
+            
+            <!-- Sidebar Filters -->
+            <aside class="filters-sidebar">
+              <div class="filters-title">
+                <span>Filter Records</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              </div>
+              
+              <div class="filter-group">
+                <label class="filter-label">Department</label>
+                <select id="filter-public-dept" class="filter-select">
+                  <option value="ALL">All Departments</option>
+                  <option value="Generation">Generation</option>
+                  <option value="Transmission">Transmission</option>
+                  <option value="Finance">Finance</option>
+                  <option value="HR">Human Resources</option>
+                  <option value="IT">IT Infrastructure</option>
+                  <option value="Legal">Legal & Contracts</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-label">Document Type</label>
+                <select id="filter-public-type" class="filter-select">
+                  <option value="ALL">All Formats</option>
+                  <option value="PDF">PDF Document</option>
+                  <option value="DOCX">Word Document</option>
+                  <option value="XLSX">Excel Sheet</option>
+                  <option value="IMAGE">Image Assets</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-label">Year Published</label>
+                <select id="filter-public-year" class="filter-select">
+                  <option value="ALL">All Years</option>
+                  <option value="2026">2026</option>
+                  <option value="2025">2025</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label class="filter-label">Category</label>
+                <div class="filter-checkbox-list" id="filter-public-category-list">
+                  <label class="checkbox-label"><input type="checkbox" value="Technical"> Technical</label>
+                  <label class="checkbox-label"><input type="checkbox" value="Administrative"> Administrative</label>
+                  <label class="checkbox-label"><input type="checkbox" value="Financial"> Financial</label>
+                  <label class="checkbox-label"><input type="checkbox" value="Regulatory"> Regulatory</label>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Main Listing Area -->
+            <div class="docs-main">
+              <div class="search-bar-row">
+                <div class="search-input-wrapper">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="search-public-input" class="search-input" placeholder="Search by name, tags, or description...">
+                </div>
+                <button id="btn-public-search" class="btn-search">Search</button>
+              </div>
+
+              <div class="docs-grid" id="public-docs-grid">
+                <!-- Dynamic Cards -->
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- View: Document Viewer -->
+        <section id="view-document-viewer" class="public-view hidden">
+          <div class="viewer-layout">
+            <!-- Left Side: Preview Pane -->
+            <div class="viewer-main">
+              <div class="viewer-bar">
+                <div class="viewer-bar-title" id="viewer-doc-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  <span>Loading Document...</span>
+                </div>
+                <div class="viewer-controls">
+                  <button class="btn-icon" title="Zoom In"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+                  <button class="btn-icon" title="Zoom Out"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+                </div>
+              </div>
+              <div class="viewer-content-pane">
+                <!-- Interactive Preview Render -->
+                <div class="viewer-mock-page" id="viewer-mock-page">
+                  <div class="viewer-mock-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>ODISHA HYDRO POWER CORPORATION LTD.</span>
+                  </div>
+                  <div class="viewer-mock-watermark" id="viewer-watermark">PUBLIC</div>
+                  <div class="viewer-mock-content" id="viewer-mock-content">
+                    <h2>Loading Document Content...</h2>
+                  </div>
+                  <div class="viewer-mock-footer">
+                    <span>DocShield Secure Output</span>
+                    <span>Page 1 of 1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side: Metadata Panel & Actions -->
+            <aside class="viewer-sidebar">
+              <h3 class="viewer-sidebar-title">Document Properties</h3>
+              <div class="metadata-list">
+                <div class="metadata-item">
+                  <span class="metadata-label">Classification</span>
+                  <span class="metadata-value" id="viewer-classification"><span class="badge-classification public">Public</span></span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Department</span>
+                  <span class="metadata-value" id="viewer-dept">Generation</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Published Date</span>
+                  <span class="metadata-value" id="viewer-pub-date">07-Jun-2026</span>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Tags / Labels</span>
+                  <div class="metadata-tags" id="viewer-tags">
+                    <span class="metadata-tag">Policy</span>
+                  </div>
+                </div>
+                <div class="metadata-item">
+                  <span class="metadata-label">Active Version</span>
+                  <span class="metadata-value" id="viewer-version-badge">v1.0</span>
+                </div>
+              </div>
+
+              <!-- Sidebar Action Buttons -->
+              <div class="viewer-actions-list" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+                <button id="btn-viewer-download" class="btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download Document
+                </button>
+                <button id="btn-viewer-print" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  Print Copy
+                </button>
+              </div>
+
+              <!-- Version History Segment -->
+              <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem;">Version History</h4>
+                <div class="version-list" id="viewer-version-list">
+                  <!-- Dynamic version items -->
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- View: Departments -->
+        <section id="view-departments" class="public-view hidden">
+          <div style="max-width: 1200px; margin: 4rem auto; padding: 0 2rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+              <h2 style="font-size: 2.25rem; font-weight: 800; color: var(--navy);">OHPC Corporate Departments</h2>
+              <p style="color: var(--text-muted); max-width: 600px; margin: 0.5rem auto;">Select a department structure below to view corresponding public releases and operational policies.</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;" id="dept-cards-grid">
+              <!-- Grid items will be managed dynamically in JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- View: About -->
+        <section id="view-about" class="public-view hidden">
+          <div style="max-width: 800px; margin: 4rem auto; padding: 0 2rem; line-height: 1.8; color: var(--text-muted);">
+            <h2 style="font-size: 2.25rem; font-weight: 800; color: var(--navy); margin-bottom: 1.5rem; text-align: center;">About Odisha Hydro Power Corporation</h2>
+            <p style="margin-bottom: 1.5rem; font-size: 1.05rem;">The Odisha Hydro Power Corporation Ltd. (OHPC) is a Gold Category State Public Sector Undertaking of the Government of Odisha. Consequent to the reform in the power sector, OHPC was incorporated in 1995 to operate, maintain, and manage hydro generating stations across the state of Odisha.</p>
+            <p style="margin-bottom: 1.5rem; font-size: 1.05rem;">With massive investments in green energy, hydel projects, and grid security, OHPC handles a wide array of high-security drawings, operational logbooks, tender schedules, and statutory regulatory filings. DocShield serves as the next-generation document vaults platform ensuring that citizen files remain accessible while security-critical operations are fully encrypted.</p>
+            <div style="background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 2rem; margin-top: 3rem;">
+              <h4 style="color: var(--navy); font-weight: 700; margin-bottom: 1rem;">Primary System Principles:</h4>
+              <ul style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <li><strong>Strict RBAC Encryption:</strong> Cryptographic pipeline visualizer enforces AES-256 and RSA key signature verification for proprietary designs.</li>
+                <li><strong>Compliance Audit Logs:</strong> Cryptographically verified system logging of all internal reads and writes.</li>
+                <li><strong>Citizen Access Transparency:</strong> Direct download of citizen charters and tenders without system accounts.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- View: Contact -->
+        <section id="view-contact" class="public-view hidden">
+          <div style="max-width: 600px; margin: 4rem auto; padding: 0 2rem;">
+            <div style="background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 3rem; box-shadow: var(--shadow-md);">
+              <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--navy); margin-bottom: 1.5rem; text-align: center;">Contact OHPC Support</h2>
+              <form id="contact-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" class="form-input" required placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" class="form-input" required placeholder="Enter email address">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Message / Inquiry</label>
+                  <textarea class="form-input" rows="4" required placeholder="Describe your inquiry..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 1rem;">Send Inquiry</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- View: Login -->
+        <section id="view-login" class="public-view hidden">
+          <div class="login-layout">
+            <div class="login-card">
+              <div class="login-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0B5ED7" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <h3>Sign in to DocShield</h3>
+                <p>Enter your enterprise credentials to access the secure repository.</p>
+              </div>
+              <form id="login-form">
+                <div class="form-group">
+                  <label class="form-label">Username</label>
+                  <input type="text" id="login-username" class="form-input" autocomplete="username" required placeholder="e.g. admin@ohpc.gov.in">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Password</label>
+                  <input type="password" id="login-password" class="form-input" autocomplete="current-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-login">Verify Credentials</button>
+              </form>
+
+              <!-- One-Click Testing Buttons -->
+              <div class="demo-logins-title">Quick Role Selector for Review</div>
+              <div class="demo-logins-grid">
+                <button class="btn-demo-login" data-role="viewer">
+                  Viewer
+                  <span>Can view restricted docs</span>
+                </button>
+                <button class="btn-demo-login" data-role="editor">
+                  Editor
+                  <span>Can upload and check out</span>
+                </button>
+                <button class="btn-demo-login" data-role="approver">
+                  Approver
+                  <span>Can publish draft records</span>
+                </button>
+                <button class="btn-demo-login" data-role="dept-admin">
+                  Dept Admin
+                  <span>Manage department permissions</span>
+                </button>
+                <button class="btn-demo-login" data-role="sys-admin">
+                  System Admin
+                  <span>Access all tools & logs</span>
+                </button>
+                <button class="btn-demo-login" data-role="anonymous">
+                  Visitor
+                  <span>Anonymous public visitor</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Public Footer -->
+      <footer class="public-footer">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <h4>DocShield</h4>
+            <p>Odisha Hydro Power Corporation Limited is dedicated to grid-stabilization and clean hydropower development across Odisha.</p>
+          </div>
+          <div class="footer-links">
+            <h5>Resources</h5>
+            <ul>
+              <li><a href="#public-documents">Public Documents</a></li>
+              <li><a href="#departments">Departments</a></li>
+              <li><a href="#about">About Corporation</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h5>Security</h5>
+            <ul>
+              <li><a href="#login">Internal Sign In</a></li>
+              <li><a href="#about">Vulnerability Disclosure</a></li>
+              <li><a href="#home">Digital Certificates</a></li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <h5>Office Address</h5>
+            <p style="font-size: 0.85rem; line-height: 1.6;">OHPC Training Centre,<br>Vani Vihar Chowk,<br>Bhubaneswar, Odisha - 751007</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Odisha Hydro Power Corporation Limited. All Rights Reserved.</p>
+          <div style="display: flex; gap: 1.5rem;">
+            <a href="#home">Privacy Policy</a>
+            <a href="#home">Terms of Service</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+
+    <!-- ================= INTERNAL PORTAL WRAPPER (HIDDEN BY DEFAULT) ================= -->
+    <div id="internal-layout" class="hidden">
+      <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <a href="#dashboard" class="logo-brand" style="color: var(--surface);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>DocShield</span>
+            </a>
+          </div>
+
+          <nav class="sidebar-menu">
+            <a href="#dashboard" class="sidebar-link active" data-tab="dashboard">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+              <span>Dashboard</span>
+            </a>
+            <a href="#repository" class="sidebar-link" data-tab="repository">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span>Repository</span>
+            </a>
+            <a href="#search" class="sidebar-link" data-tab="search">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>Secure Search</span>
+            </a>
+            <a href="#workflows" class="sidebar-link" data-tab="workflows" id="tab-workflows-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+              <span>Workflows</span>
+            </a>
+            <a href="#security" class="sidebar-link" data-tab="security">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Security Vault</span>
+            </a>
+            <a href="#audit" class="sidebar-link" data-tab="audit" id="tab-audit-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span>Audit Log</span>
+            </a>
+            <a href="#administration" class="sidebar-link" data-tab="administration" id="tab-admin-link">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Administration</span>
+            </a>
+            <a href="#profile" class="sidebar-link" data-tab="profile">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Profile Settings</span>
+            </a>
+          </nav>
+
+          <div class="sidebar-footer">
+            <button class="btn-logout" id="btn-sidebar-logout">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Log Out</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="app-main">
+          
+          <!-- Top Header navbar -->
+          <header class="app-header">
+            <div class="header-title-bar">
+              <h2 id="internal-page-title">Dashboard</h2>
+              
+              <!-- Quick Testing Role Picker -->
+              <div class="quick-role-picker">
+                <span>Active Role:</span>
+                <select id="quick-role-select">
+                  <option value="viewer">Viewer</option>
+                  <option value="editor">Editor</option>
+                  <option value="approver">Approver</option>
+                  <option value="dept-admin">Dept Admin</option>
+                  <option value="sys-admin">System Admin</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="header-user-actions">
+              <a href="#home" class="btn-public-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Public Portal
+              </a>
+
+              <div class="header-user-profile">
+                <div class="user-avatar" id="header-user-avatar">SA</div>
+                <div class="user-meta-details">
+                  <span class="user-meta-name" id="header-user-name">System Administrator</span>
+                  <span class="user-meta-role" id="header-user-role">SYSTEM ADMIN</span>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          <!-- Internal Views Wrapper -->
+          <div class="app-content" id="internal-views-container">
+            
+            <!-- View: Dashboard -->
+            <section id="view-dashboard" class="internal-view">
+              <div class="dashboard-grid">
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(59, 130, 246, 0.08); color: var(--accent-blue);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="dash-stat-total-files">324</h3>
+                    <p>Total Managed Files</p>
+                  </div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(22, 163, 74, 0.08); color: var(--success);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="dash-stat-encrypted-files">176</h3>
+                    <p>Encrypted Documents</p>
+                  </div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(217, 119, 6, 0.08); color: var(--warning);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="dash-stat-pending-reviews">3</h3>
+                    <p>Pending Workflows</p>
+                  </div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(220, 38, 38, 0.08); color: var(--error);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <h3 id="dash-stat-secret-files">12</h3>
+                    <p>Secret Classifications</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dashboard Charts -->
+              <div class="chart-layout-row">
+                <div class="chart-card">
+                  <h4 class="section-title">Documents by Security Classification</h4>
+                  <div class="chart-container" id="dash-classification-chart">
+                    <!-- Dynamic chart bars simulated in HTML/CSS -->
+                    <div class="bar-item">
+                      <div class="bar-graphic" style="background: var(--color-public); height: 60%;" data-value="148"></div>
+                      <span class="bar-label">Public</span>
+                    </div>
+                    <div class="bar-item">
+                      <div class="bar-graphic" style="background: var(--color-restricted); height: 45%;" data-value="98"></div>
+                      <span class="bar-label">Restricted</span>
+                    </div>
+                    <div class="bar-item">
+                      <div class="bar-graphic" style="background: var(--color-confidential); height: 28%;" data-value="66"></div>
+                      <span class="bar-label">Confidential</span>
+                    </div>
+                    <div class="bar-item">
+                      <div class="bar-graphic" style="background: var(--color-secret); height: 12%;" data-value="12"></div>
+                      <span class="bar-label">Secret</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="chart-card">
+                  <h4 class="section-title">Department Distribution</h4>
+                  <div class="chart-container" id="dash-department-chart" style="align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem;">
+                    <!-- Department counts will be rendered as mini progress rows -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Checked-Out Documents and Actions items -->
+              <div class="section-card">
+                <h4 class="section-title" style="margin-bottom: 1.5rem;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Internal Dashboard Operations & Tasks
+                </h4>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Action Log</th>
+                        <th>Resource</th>
+                        <th>User Account</th>
+                        <th>Verification Status</th>
+                        <th>Action Time</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dash-recent-ops-table">
+                      <!-- Dynamic rows from logs -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- View: Repository (File Explorer) -->
+            <section id="view-repository" class="internal-view hidden">
+              <!-- Toolbar -->
+              <div class="repository-toolbar">
+                <div class="repo-breadcrumbs" id="repo-breadcrumbs-container">
+                  <!-- breadcrumb entries -->
+                </div>
+                
+                <div class="repo-actions-group">
+                  <button id="btn-repo-new-folder" class="btn-secondary" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                    New Folder
+                  </button>
+                  <button id="btn-repo-upload" class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Document
+                  </button>
+                </div>
+              </div>
+
+              <!-- Folder Sub-navigation view Grid -->
+              <div class="folders-grid" id="repo-folders-container">
+                <!-- folders list -->
+              </div>
+
+              <!-- Bulk Actions Bar (Hidden by default) -->
+              <div id="repo-bulk-bar" class="repository-toolbar hidden" style="background: rgba(11, 94, 215, 0.05); border-color: var(--primary-blue);">
+                <div style="font-size: 0.9rem; font-weight: 600; color: var(--navy);" id="repo-bulk-selected-txt">
+                  3 items selected
+                </div>
+                <div class="repo-actions-group">
+                  <button id="btn-bulk-tag" class="btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">Change Tags</button>
+                  <button id="btn-bulk-move" class="btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">Move To Folder</button>
+                  <button id="btn-bulk-delete" class="btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: var(--error); border-color: var(--error);">Delete Selected</button>
+                </div>
+              </div>
+
+              <!-- Main Files list table -->
+              <div class="section-card" style="padding: 1rem 1.5rem;">
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th width="40"><input type="checkbox" id="repo-select-all-checkbox"></th>
+                        <th>Name</th>
+                        <th>Classification</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Locked By</th>
+                        <th>Last Modified</th>
+                        <th width="120">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="repo-files-table-body">
+                      <!-- Files list entries -->
+                    </tbody>
+                  </table>
+                  <div id="repo-empty-state" class="hidden" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" style="margin-bottom: 1rem;"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    <p style="font-weight: 600;">No documents in this folder</p>
+                    <p style="font-size: 0.85rem;">Click 'Upload Document' to add files to this vault.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- View: Upload Center (Form view) -->
+            <section id="view-upload" class="internal-view hidden">
+              <!-- Drag and Drop Drop-zone -->
+              <div class="upload-drop-zone" id="file-drop-zone">
+                <input type="file" id="file-picker-input" style="display: none;" multiple>
+                <div class="upload-icon-wrapper">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="upload-drop-text" id="drop-zone-primary-text">Drag and drop documents here or click to browse</div>
+                <div class="upload-subtext">Supports PDF, DOCX, XLSX, images up to 50MB per file.</div>
+              </div>
+
+              <!-- Metadata form panel, shows after selecting file -->
+              <div class="upload-form-panel hidden" id="upload-meta-form-panel">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                  Metadata Details Configuration
+                </h3>
+                <form id="doc-upload-meta-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  
+                  <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Selected Files</label>
+                    <div id="upload-selected-files-list" style="background: var(--bg-slate); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; font-weight: 600; display: flex; flex-direction: column; gap: 0.25rem;">
+                      <!-- selected files -->
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Document Title</label>
+                    <input type="text" id="upload-meta-title" class="form-input" required placeholder="Enter custom display title">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select id="upload-meta-category" class="form-input">
+                      <option value="Technical">Technical Operations</option>
+                      <option value="Administrative">Administrative Policies</option>
+                      <option value="Financial">Financial Budgets</option>
+                      <option value="Regulatory">Regulatory Filings</option>
+                      <option value="Legal">Legal Contracts</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Department Owner</label>
+                    <select id="upload-meta-dept" class="form-input">
+                      <option value="Generation">Generation</option>
+                      <option value="Transmission">Transmission</option>
+                      <option value="Finance">Finance</option>
+                      <option value="HR">Human Resources</option>
+                      <option value="IT">IT Infrastructure</option>
+                      <option value="Legal">Legal & Contracts</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Security Classification</label>
+                    <select id="upload-meta-classification" class="form-input">
+                      <option value="PUBLIC">PUBLIC (Unencrypted, Open Access)</option>
+                      <option value="RESTRICTED">RESTRICTED (Internal, Encryption Pipeline)</option>
+                      <option value="CONFIDENTIAL">CONFIDENTIAL (Dept Shared, Encrypted)</option>
+                      <option value="SECRET">SECRET (High Security, Enforced Cryptography)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Tags / Labels (Comma separated)</label>
+                    <input type="text" id="upload-meta-tags" class="form-input" placeholder="e.g. tender, turbines, safety">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Retention Schedule</label>
+                    <select id="upload-meta-retention" class="form-input">
+                      <option value="1">1 Year - Short Review</option>
+                      <option value="5">5 Years - Standard Corporate</option>
+                      <option value="10">10 Years - Long Operational</option>
+                      <option value="99">Permanent - Archive</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group" style="grid-column: span 2;">
+                    <label class="form-label">Brief Description</label>
+                    <textarea id="upload-meta-desc" class="form-input" rows="3" placeholder="Provide an operational overview of the document's content..."></textarea>
+                  </div>
+
+                  <div style="grid-column: span 2; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                    <button type="button" id="btn-upload-cancel" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      Initialize Security & Upload
+                    </button>
+                  </div>
+
+                </form>
+              </div>
+            </section>
+
+            <!-- View: Secure Search (Advanced Console) -->
+            <section id="view-search" class="internal-view hidden">
+              <div class="section-card" style="margin-bottom: 2rem;">
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem;">Advanced Query Interface</h4>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                  <div class="search-bar-row">
+                    <div class="search-input-wrapper">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input type="text" id="internal-search-input" class="search-input" placeholder="e.g. generator AND audit NOT draft (supports wildcards * and boolean operators)">
+                    </div>
+                    <button id="btn-internal-search-execute" class="btn-search">Run Query</button>
+                  </div>
+
+                  <!-- Advanced metadata search filters -->
+                  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                    <div>
+                      <label class="filter-label">Classification</label>
+                      <select id="search-filter-classification" class="filter-select">
+                        <option value="ALL">All Levels</option>
+                        <option value="PUBLIC">PUBLIC</option>
+                        <option value="RESTRICTED">RESTRICTED</option>
+                        <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+                        <option value="SECRET">SECRET</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="filter-label">Category</label>
+                      <select id="search-filter-category" class="filter-select">
+                        <option value="ALL">All Categories</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Administrative">Administrative</option>
+                        <option value="Financial">Financial</option>
+                        <option value="Regulatory">Regulatory</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="filter-label">Department</label>
+                      <select id="search-filter-dept" class="filter-select">
+                        <option value="ALL">All Departments</option>
+                        <option value="Generation">Generation</option>
+                        <option value="Transmission">Transmission</option>
+                        <option value="Finance">Finance</option>
+                        <option value="HR">Human Resources</option>
+                        <option value="IT">IT Infrastructure</option>
+                        <option value="Legal">Legal & Contracts</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="filter-label">Format / Type</label>
+                      <select id="search-filter-type" class="filter-select">
+                        <option value="ALL">All Formats</option>
+                        <option value="PDF">PDF Document</option>
+                        <option value="DOCX">Word Document</option>
+                        <option value="XLSX">Excel Sheet</option>
+                        <option value="IMAGE">Image Assets</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Search Results -->
+              <div class="section-card">
+                <h4 class="section-title" style="margin-bottom: 1.5rem;" id="search-results-count-title">Query Results</h4>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Document Name</th>
+                        <th>Classification</th>
+                        <th>Department</th>
+                        <th>OCR Content Highlight</th>
+                        <th>Last Modified</th>
+                        <th width="100">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="internal-search-results-table">
+                      <!-- Dynamic results rows -->
+                    </tbody>
+                  </table>
+                  <div id="search-empty-state" class="hidden" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" style="margin-bottom: 1rem;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <p style="font-weight: 600;">No matching records found</p>
+                    <p style="font-size: 0.85rem;">Modify search parameters or check Boolean operators.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- View: Workflows (Review & Approval Console) -->
+            <section id="view-workflows" class="internal-view hidden">
+              <div class="section-card">
+                <h4 class="section-title" style="margin-bottom: 1.5rem;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                  Documents Awaiting Review & Publication
+                </h4>
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Document Title</th>
+                        <th>Department</th>
+                        <th>Submitted By</th>
+                        <th>Classification</th>
+                        <th>Submit Date</th>
+                        <th>Status</th>
+                        <th width="180">Approval Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="workflow-approval-table-body">
+                      <!-- workflow approvals list -->
+                    </tbody>
+                  </table>
+                  <div id="workflow-empty-state" class="hidden" style="text-align: center; padding: 4rem 2rem; color: var(--text-muted);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2" style="margin-bottom: 1rem;"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <p style="font-weight: 600;">Approval queue is empty</p>
+                    <p style="font-size: 0.85rem;">All documents are currently in published or draft states.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- View: Security (Vault & Cryptography) -->
+            <section id="view-security" class="internal-view hidden">
+              <div class="security-visualizer-container">
+                <div class="section-card">
+                  <h4 class="section-title" style="margin-bottom: 0.5rem;">Cryptographic Pipeline Sandbox</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Upload or select a file to watch DocShield run the complete secure scrambling, AES-256 symmetric cipher, RSA master wrapper, and Digital Signature authentication pipeline.</p>
+                  
+                  <!-- Pipeline Node Row -->
+                  <div class="pipeline-diagram" id="security-pipeline-nodes">
+                    <div class="pipeline-step" id="step-node-1">
+                      <div class="step-circle">1</div>
+                      <span class="step-label">File Hash<br>(SHA-256)</span>
+                    </div>
+                    <div class="pipeline-connector" id="step-conn-1"><div class="pipeline-connector-progress"></div></div>
+                    <div class="pipeline-step" id="step-node-2">
+                      <div class="step-circle">2</div>
+                      <span class="step-label">Bit Scrambler<br>(Transposition)</span>
+                    </div>
+                    <div class="pipeline-connector" id="step-conn-2"><div class="pipeline-connector-progress"></div></div>
+                    <div class="pipeline-step" id="step-node-3">
+                      <div class="step-circle">3</div>
+                      <span class="step-label">AES-256-GCM<br>(Encryption)</span>
+                    </div>
+                    <div class="pipeline-connector" id="step-conn-3"><div class="pipeline-connector-progress"></div></div>
+                    <div class="pipeline-step" id="step-node-4">
+                      <div class="step-circle">4</div>
+                      <span class="step-label">RSA Key Wrap<br>(Master Lock)</span>
+                    </div>
+                    <div class="pipeline-connector" id="step-conn-4"><div class="pipeline-connector-progress"></div></div>
+                    <div class="pipeline-step" id="step-node-5">
+                      <div class="step-circle">5</div>
+                      <span class="step-label">Digital Sign<br>(RSASSA-PSS)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live Log Console -->
+                <div class="section-card" style="padding: 1.5rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 class="section-title">Cryptographic Logs Output</h4>
+                    <button id="btn-clear-security-logs" class="btn-text-action" style="font-size: 0.8rem;">Clear Output</button>
+                  </div>
+                  <div class="pipeline-log-console" id="security-console-log">
+                    <div class="console-line header">[DocShield Cryptographic Subsystem Initialized]</div>
+                    <div class="console-line info">[System Ready] Choose a document from the Repository and trigger 'Inspect Security Wrapper' to test the decrypt pipelines, or upload new files to execute full block scrambling.</div>
+                  </div>
+                </div>
+
+                <!-- Master System Keys Inspect -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  <div class="section-card">
+                    <h4 class="section-title" style="margin-bottom: 1rem;">OHPC Master RSA Key Pair</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                      <div class="form-group">
+                        <label class="form-label">Master Public Certificate (SHA-256 Fingerprint)</label>
+                        <input type="text" class="form-input" readonly value="SHA256: 4F:9C:A1:8B:22:DF:D3:E5:80:FF:AA:88:9C:EE:AA:51:77:BA:90" style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-slate);">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Active Key Size / Algorithm</label>
+                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark);">RSA-4096 / FIPS-140-2 Level 3 Hardware Security Module (HSM)</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section-card">
+                    <h4 class="section-title" style="margin-bottom: 1rem;">Digital Signature Ledger</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                      <div class="form-group">
+                        <label class="form-label">Active Signing Authorities</label>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.25rem;">
+                          <div>- <strong>SysAdmin Signature Certificate:</strong> (Valid & Verified)</div>
+                          <div>- <strong>Approver Signature Key:</strong> (Valid & Verified)</div>
+                          <div>- <strong>Department Officer Key:</strong> (Self-signed)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- View: Audit Log (Immutable ledger interface) -->
+            <section id="view-audit" class="internal-view hidden">
+              <div class="repository-toolbar">
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                  <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted);">Auditing Filter:</span>
+                  <select id="audit-filter-action" class="filter-select" style="width: 200px; padding: 0.4rem 0.75rem; border-radius: 8px;">
+                    <option value="ALL">All System Actions</option>
+                    <option value="View Document">View Document</option>
+                    <option value="Download Document">Download Document</option>
+                    <option value="Upload Document">Upload Document</option>
+                    <option value="Approve Document">Approve Document</option>
+                    <option value="Create Folder">Create Folder</option>
+                    <option value="Change Role">Change Role</option>
+                    <option value="Restore Version">Restore Version</option>
+                    <option value="Purge Document">Purge Document</option>
+                  </select>
+                </div>
+                <button id="btn-export-audit-csv" class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export Audit Ledger (CSV)
+                </button>
+              </div>
+
+              <!-- Immutable ledger table -->
+              <div class="section-card">
+                <div class="table-wrapper">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>User Account</th>
+                        <th>Security Role</th>
+                        <th>Action Performed</th>
+                        <th>Resource Context</th>
+                        <th>Result Status</th>
+                        <th>IP Address</th>
+                      </tr>
+                    </thead>
+                    <tbody id="audit-logs-table-body">
+                      <!-- Dynamic logs -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <!-- View: Administration (Retention & Purging & Developers APIs) -->
+            <section id="view-administration" class="internal-view hidden">
+              <!-- Retention Schedule Matrix -->
+              <div class="chart-layout-row">
+                <div class="section-card">
+                  <h4 class="section-title" style="margin-bottom: 1rem;">Document Retention Policies</h4>
+                  <div class="table-wrapper">
+                    <table class="data-table" style="font-size: 0.85rem;">
+                      <thead>
+                        <tr>
+                          <th>Document Category</th>
+                          <th>Retention Period</th>
+                          <th>End-of-Life Action</th>
+                          <th>Active Files</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><strong>Technical Operations</strong></td>
+                          <td>10 Years</td>
+                          <td>Manual Audit / Review</td>
+                          <td id="admin-ret-count-tech">0</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Administrative Policies</strong></td>
+                          <td>5 Years</td>
+                          <td>Automated Archive</td>
+                          <td id="admin-ret-count-admin">0</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Financial Budgets</strong></td>
+                          <td>5 Years</td>
+                          <td>Purge & Log Destruction</td>
+                          <td id="admin-ret-count-fin">0</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Regulatory Filings</strong></td>
+                          <td>Permanent</td>
+                          <td>Permanent Vault</td>
+                          <td id="admin-ret-count-reg">0</td>
+                        </tr>
+                        <tr>
+                          <td><strong>Legal Contracts</strong></td>
+                          <td>Permanent</td>
+                          <td>Permanent Vault</td>
+                          <td id="admin-ret-count-legal">0</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Expired purge list queue -->
+                <div class="section-card">
+                  <h4 class="section-title" style="margin-bottom: 0.5rem;">System Purge Queue</h4>
+                  <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">Documents that have exceeded their retention schedule require a System Admin purge clearance.</p>
+                  <div class="table-wrapper">
+                    <table class="data-table" style="font-size: 0.85rem;">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="admin-purge-queue-body">
+                        <!-- dynamic expired files -->
+                      </tbody>
+                    </table>
+                    <div id="purge-queue-empty" class="hidden" style="text-align: center; padding: 2rem 1rem; color: var(--text-muted); font-size: 0.8rem;">
+                      No documents currently scheduled for purge clearance.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- REST APIs and Webhooks console simulator -->
+              <div class="section-card" style="margin-bottom: 2rem;">
+                <h4 class="section-title" style="margin-bottom: 0.5rem;">Enterprise Integrations Hub</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Configure REST API tokens and Webhook triggers to sync OHPC DocShield events with external plant systems.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                  <!-- API Token config -->
+                  <div>
+                    <h5 style="color: var(--navy); font-weight: 700; margin-bottom: 0.75rem;">REST API Client Tokens</h5>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                      <div class="form-group">
+                        <label class="form-label">Bearer Token</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                          <input type="text" id="admin-api-token" class="form-input" readonly value="ohpc_live_token_8a3f9e2d1c7b" style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-slate);">
+                          <button id="btn-admin-generate-api" class="btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; white-space: nowrap;">Regenerate</button>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">API Endpoints Documentation</label>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.25rem;">
+                          <div><code>GET /api/v1/documents</code> - Query document registry</div>
+                          <div><code>GET /api/v1/documents/{id}/download</code> - Download payload bytes</div>
+                          <div><code>POST /api/v1/documents</code> - Initialize upload pipelines</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Webhooks client -->
+                  <div>
+                    <h5 style="color: var(--navy); font-weight: 700; margin-bottom: 0.75rem;">Active Webhook Callbacks</h5>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                      <div class="form-group">
+                        <label class="form-label">Endpoint URL</label>
+                        <input type="url" id="admin-webhook-url" class="form-input" value="https://plant-sync.ohpc.gov.in/hooks/docshield" placeholder="https://external-service.com/webhook">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Trigger Event Type</label>
+                        <select id="admin-webhook-event" class="form-input">
+                          <option value="document.published">document.published</option>
+                          <option value="document.purged">document.purged</option>
+                          <option value="audit.alert">audit.alert</option>
+                        </select>
+                      </div>
+                      <button id="btn-admin-test-webhook" class="btn-primary" style="align-self: flex-start; font-size: 0.8rem; padding: 0.4rem 1rem;">Test Trigger Call</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reset State segment -->
+              <div class="section-card" style="border-color: rgba(220,38,38,0.2);">
+                <h4 class="section-title" style="color: var(--error); margin-bottom: 0.5rem;">Danger Zone</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Perform a full system state reset. This wipes localStorage data and recreates the pre-seeded OHPC document environment.</p>
+                <button id="btn-reset-demo-state" class="btn-secondary" style="border-color: var(--error); color: var(--error);">
+                  Reset Application Demo State
+                </button>
+              </div>
+            </section>
+
+            <!-- View: Profile -->
+            <section id="view-profile" class="internal-view hidden">
+              <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+                <!-- Profile details -->
+                <div class="section-card" style="text-align: center;">
+                  <div class="user-avatar" id="profile-avatar" style="width: 96px; height: 96px; font-size: 2.5rem; margin: 0 auto 1.5rem;">SA</div>
+                  <h3 id="profile-name" style="color: var(--navy); font-weight: 700; margin-bottom: 0.25rem;">System Administrator</h3>
+                  <p id="profile-role-badge" style="margin-bottom: 1.5rem;"><span class="badge-classification secret" style="font-size: 0.75rem;">SYSTEM ADMIN</span></p>
+                  
+                  <div style="text-align: left; font-size: 0.85rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div><strong>Username:</strong> <span id="profile-email">admin@ohpc.gov.in</span></div>
+                    <div><strong>Primary Department:</strong> <span id="profile-dept">IT Infrastructure</span></div>
+                    <div><strong>Authentication:</strong> <span id="profile-auth-type">HSM Token / PKI Signed</span></div>
+                  </div>
+                </div>
+
+                <!-- Session logs and permissions matrix -->
+                <div class="section-card">
+                  <h4 class="section-title" style="margin-bottom: 1.5rem;">Your Role Permissions Checklist</h4>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); line-height: 2;">
+                    <div>
+                      <h5 style="color: var(--navy); font-weight: 700; margin-bottom: 0.5rem;">Allowed Repository Actions:</h5>
+                      <div id="profile-perm-check-browse">&check; Browse Internal Repositories</div>
+                      <div id="profile-perm-check-view">&check; View Restricted Documents</div>
+                      <div id="profile-perm-check-upload">&check; Upload New Document Records</div>
+                      <div id="profile-perm-check-edit">&check; Edit Metadata & Create Versions</div>
+                    </div>
+                    <div>
+                      <h5 style="color: var(--navy); font-weight: 700; margin-bottom: 0.5rem;">Allowed System Controls:</h5>
+                      <div id="profile-perm-check-workflow">&check; Approve Draft Submissions</div>
+                      <div id="profile-perm-check-perms">&check; Modify Department Permissions</div>
+                      <div id="profile-perm-check-audit">&check; Inspect Audit Ledgers</div>
+                      <div id="profile-perm-check-admin">&check; Manage Retention & Expirations</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </main>
+      </div>
+    </div>
+
+  </div> <!-- /App Wrapper -->
+
+
+  <!-- ================= DIALOGS AND OVERLAYS (MODALS) ================= -->
+
+  <!-- Dialog: New Folder -->
+  <dialog id="modal-new-folder">
+    <div class="dialog-header">
+      <span class="dialog-title">Create New Folder</span>
+      <button class="btn-icon" data-dialog-close="modal-new-folder"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-new-folder" method="dialog">
+      <div class="form-group">
+        <label class="form-label" for="new-folder-name">Folder Name</label>
+        <input type="text" id="new-folder-name" class="form-input" required placeholder="e.g. Turbine Logs">
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn-secondary" data-dialog-close="modal-new-folder">Cancel</button>
+        <button type="submit" class="btn-primary">Create Folder</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Bulk Edit Tags -->
+  <dialog id="modal-bulk-tags">
+    <div class="dialog-header">
+      <span class="dialog-title">Bulk Apply Tags</span>
+      <button class="btn-icon" data-dialog-close="modal-bulk-tags"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-bulk-tags" method="dialog">
+      <div class="form-group">
+        <label class="form-label" for="bulk-tags-input">Tags / Labels (Comma separated)</label>
+        <input type="text" id="bulk-tags-input" class="form-input" required placeholder="e.g. audit-2026, verification">
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn-secondary" data-dialog-close="modal-bulk-tags">Cancel</button>
+        <button type="submit" class="btn-primary">Apply Tags</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Bulk Move -->
+  <dialog id="modal-bulk-move">
+    <div class="dialog-header">
+      <span class="dialog-title">Move Items to Folder</span>
+      <button class="btn-icon" data-dialog-close="modal-bulk-move"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-bulk-move" method="dialog">
+      <div class="form-group">
+        <label class="form-label" for="bulk-move-folder-select">Target Folder</label>
+        <select id="bulk-move-folder-select" class="form-input" required>
+          <!-- folder list options dynamically -->
+        </select>
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn-secondary" data-dialog-close="modal-bulk-move">Cancel</button>
+        <button type="submit" class="btn-primary">Move Items</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Edit Metadata (Single Document) -->
+  <dialog id="modal-edit-meta">
+    <div class="dialog-header">
+      <span class="dialog-title">Edit Document Properties</span>
+      <button class="btn-icon" data-dialog-close="modal-edit-meta"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-edit-meta" method="dialog">
+      <input type="hidden" id="edit-meta-doc-id">
+      
+      <div class="form-group">
+        <label class="form-label" for="edit-meta-title">Document Title</label>
+        <input type="text" id="edit-meta-title" class="form-input" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="edit-meta-classification">Security Classification</label>
+        <select id="edit-meta-classification" class="form-input">
+          <option value="PUBLIC">PUBLIC</option>
+          <option value="RESTRICTED">RESTRICTED</option>
+          <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+          <option value="SECRET">SECRET</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="edit-meta-category">Category</label>
+        <select id="edit-meta-category" class="form-input">
+          <option value="Technical">Technical</option>
+          <option value="Administrative">Administrative</option>
+          <option value="Financial">Financial</option>
+          <option value="Regulatory">Regulatory</option>
+          <option value="Legal">Legal</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="edit-meta-tags">Tags (Comma separated)</label>
+        <input type="text" id="edit-meta-tags" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="edit-meta-retention">Retention Schedule</label>
+        <select id="edit-meta-retention" class="form-input">
+          <option value="0">Expired - Trigger Purge</option>
+          <option value="1">1 Year - Short Review</option>
+          <option value="5">5 Years - Standard Corporate</option>
+          <option value="10">10 Years - Long Operational</option>
+          <option value="99">Permanent - Archive</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="edit-meta-change-reason">Reason for Change / Commit Message</label>
+        <input type="text" id="edit-meta-change-reason" class="form-input" required placeholder="Describe what was modified in this revision...">
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn-secondary" data-dialog-close="modal-edit-meta">Cancel</button>
+        <button type="submit" class="btn-primary">Save as New Version</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Manage Permissions (Doc/Folder level) -->
+  <dialog id="modal-permissions">
+    <div class="dialog-header">
+      <span class="dialog-title" id="modal-perm-title">Manage Permissions</span>
+      <button class="btn-icon" data-dialog-close="modal-permissions"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="form-permissions" method="dialog">
+      <input type="hidden" id="perm-resource-id">
+      <input type="hidden" id="perm-resource-type"> <!-- folder or file -->
+
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;" id="perm-resource-info">
+        Assign access credentials to specific corporate departments.
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="permissions-dept-rows-container">
+          <!-- checkboxes and selectors for each department -->
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn-secondary" data-dialog-close="modal-permissions">Cancel</button>
+        <button type="submit" class="btn-primary">Apply Access Controls</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Certificate of Encryption -->
+  <dialog id="modal-encryption-cert" style="max-width: 550px;">
+    <div class="dialog-header">
+      <span class="dialog-title">Cryptographic Encryption Certificate</span>
+      <button class="btn-icon" data-dialog-close="modal-encryption-cert"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="encryption-cert-content" style="padding: 1rem 0;">
+      <!-- Dynamic Certificate HTML -->
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn-primary" data-dialog-close="modal-encryption-cert">Close Certificate</button>
+    </div>
+  </dialog>
+
+  <!-- Container for Toast Notifications -->
+  <div id="toast-container"></div>
+
+  <!-- Main JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
