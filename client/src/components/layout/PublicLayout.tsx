@@ -13,19 +13,20 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ currentRoute, childr
   return (
     <div id="public-layout">
       <header className="public-header">
-        <div className="header-container">
-          <a href="#home" className="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <span>DocShield</span>
-          </a>
+        <div className="nav-container">
+          <div className="logo-group" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <a href="#home" className="logo-ohpc" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/ohpc_logo.jpg" alt="OHPC Logo" style={{ height: '42px', objectFit: 'contain' }} />
+            </a>
+            <div className="logo-separator" style={{ height: '28px', width: '1px', background: 'var(--border-color)' }}></div>
+            <a href="#home" className="logo-brand" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/docshield_full.png" alt="DocShield Logo" style={{ height: '32px', objectFit: 'contain' }} />
+            </a>
+          </div>
           <nav className="public-menu">
             <a href="#home" className={`menu-link ${currentRoute === 'home' ? 'active' : ''}`}>Home</a>
             <a href="#public-documents" className={`menu-link ${currentRoute === 'public-documents' ? 'active' : ''}`}>Public Documents</a>
-            <a href="#departments" className={`menu-link ${currentRoute === 'departments' ? 'active' : ''}`}>Departments</a>
             <a href="#about" className={`menu-link ${currentRoute === 'about' ? 'active' : ''}`}>About</a>
-            <a href="#contact" className={`menu-link ${currentRoute === 'contact' ? 'active' : ''}`}>Contact</a>
             
             {isLoggedIn ? (
               <a href="#dashboard" className="btn-primary btn-login-nav" style={{ textDecoration: 'none' }}>Go To Workspace</a>
@@ -41,30 +42,41 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ currentRoute, childr
       </main>
 
       <footer className="public-footer">
-        <div className="footer-container">
-          <div className="footer-info">
-            <div className="footer-logo">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>DocShield DMS</span>
-            </div>
-            <p>Odisha Hydro Power Corporation regulatory portal. Secure archiving and verification services compliance platform.</p>
+        <div className="footer-content">
+          <div className="footer-brand">
+            <h4>DocShield</h4>
+            <p>Odisha Hydro Power Corporation Limited is dedicated to grid-stabilization and clean hydropower development across Odisha.</p>
           </div>
           <div className="footer-links">
-            <h4>Resource Directory</h4>
-            <a href="#public-documents">Public Tender Records</a>
-            <a href="#departments">Hydro Stations Maps</a>
-            <a href="#about">Regulatory Disclosures</a>
+            <h5>Resource Directory</h5>
+            <ul>
+              <li><a href="#public-documents">Public Documents</a></li>
+              <li><a href="#about">About System</a></li>
+              <li><a href="#about">Regulatory Disclosures</a></li>
+            </ul>
           </div>
-          <div className="footer-contact">
-            <h4>Regulatory Compliance Hub</h4>
-            <p>Office of the IT Director, OHPC Corporate Office, Bhubaneswar, Odisha.</p>
-            <p>Email: security-dms@ohpc.gov.in</p>
+          <div className="footer-links">
+            <h5>Compliance</h5>
+            <ul>
+              <li><a href="#login">Internal Sign In</a></li>
+              <li><a href="#about">Vulnerability Disclosure</a></li>
+            </ul>
+          </div>
+          <div className="footer-links">
+            <h5>Contact Details</h5>
+            <p style={{ fontSize: '0.85rem', lineHeight: '1.6' }}>
+              IT Department, OHPC Corporate Office,<br />
+              Bhubaneswar, Odisha - 751001<br />
+              Email: security-dms@ohpc.gov.in
+            </p>
           </div>
         </div>
-        <div style={{ textAlign: 'center', marginTop: '2rem', padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
-          &copy; 2026 Odisha Hydro Power Corporation Ltd. All rights reserved.
+        <div className="footer-bottom">
+          <p>&copy; 2026 Odisha Hydro Power Corporation Ltd. All rights reserved.</p>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <a href="#home">Privacy Policy</a>
+            <a href="#home">Terms of Service</a>
+          </div>
         </div>
       </footer>
     </div>

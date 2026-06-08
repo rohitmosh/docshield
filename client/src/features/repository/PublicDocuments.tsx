@@ -206,7 +206,7 @@ export const PublicDocuments: React.FC = () => {
             filteredFiles.map(doc => {
               const formattedDate = new Date(doc.modified_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
               return (
-                <div key={doc.id} className="doc-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '240px' }}>
+                <div key={doc.id} className="doc-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <div className="doc-card-header">
                       <span className="badge-classification public">Public</span>

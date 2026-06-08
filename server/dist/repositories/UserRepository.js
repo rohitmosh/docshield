@@ -12,5 +12,14 @@ class UserRepository {
         const query = db_1.db.prepare('SELECT * FROM users');
         return query.all();
     }
+    static update(id, fields) {
+        const keys = Object.keys(fields);
+        if (keys.length === 0)
+            return;
+        const setClause = keys.map(k => `${k} = ?`).join(', ');
+        const values = keys.map(k => fields[k]);
+        const query = db_1.db.prepare(`UPDATE users SET ${setClause} WHERE id = ?`);
+        query.run(...values, id);
+    }
 }
 exports.UserRepository = UserRepository;

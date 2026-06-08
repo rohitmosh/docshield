@@ -2,9 +2,12 @@ export interface User {
   id: string;
   name: string;
   email: string | null;
-  role: 'ANONYMOUS' | 'VIEWER' | 'EDITOR' | 'APPROVER' | 'DEPT_ADMIN' | 'SYSTEM_ADMIN';
+  role: 'ANONYMOUS' | 'OFFICIAL' | 'SYSTEM_ADMIN';
   dept: string;
   avatar: string;
+  rank?: string;
+  can_edit?: number;
+  can_approve?: number;
 }
 
 export interface Folder {

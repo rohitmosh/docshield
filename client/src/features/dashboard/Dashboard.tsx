@@ -51,7 +51,7 @@ export const Dashboard: React.FC = () => {
         setDeptDistribution(depts);
 
         // Conditional Audit Log fetching based on role
-        const isAdmin = ['DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role);
+        const isAdmin = user.role === 'SYSTEM_ADMIN';
         setHasAuditAccess(isAdmin);
         if (isAdmin) {
           const auditData = await apiRequest('/audit/logs');

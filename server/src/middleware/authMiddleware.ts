@@ -10,6 +10,9 @@ export interface AuthenticatedRequest extends Request {
     role: string;
     dept: string;
     avatar: string;
+    rank?: string;
+    can_edit?: number;
+    can_approve?: number;
   };
 }
 
@@ -23,7 +26,10 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
       email: null,
       role: 'ANONYMOUS',
       dept: 'Public',
-      avatar: 'PV'
+      avatar: 'PV',
+      rank: 'Guest',
+      can_edit: 0,
+      can_approve: 0
     };
     next();
     return;
@@ -54,4 +60,40 @@ export function requireRole(allowedRoles: string[]) {
 
     next();
   };
+}
+
+export function requireEdit(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+  if (!req.user) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+  if (req.user.role === 'SYSTEM_ADMIN' || req.user.can_edit === 1) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access Denied: You do not have edit permissions.' });
+  }
+}
+
+export function requireApprove(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+  if (!req.user) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+  if (req.user.role === 'SYSTEM_ADMIN' || req.user.can_approve === 1) {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access Denied: You do not have approve permissions.' });
+  }
+}
+
+export function requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+  if (!req.user) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+  if (req.user.role === 'SYSTEM_ADMIN') {
+    next();
+  } else {
+    res.status(403).json({ error: 'Access Denied: System Administrator privilege required.' });
+  }
 }

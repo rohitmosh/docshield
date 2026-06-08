@@ -81,9 +81,9 @@ export const Login: React.FC = () => {
 
         {/* Right Side: Quick Demo Accounts Matrix */}
         <div style={{ background: 'rgba(8, 59, 138, 0.02)', padding: '3rem', borderLeft: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <h3 style={{ fontWeight: 700, color: 'var(--navy)', marginBottom: '1.25rem', fontSize: '1.15rem' }}>Demo Accounts Matrix</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-            Click any role card below to instantly authenticate and inspect its access control permissions in the system.
+          <h3 style={{ fontWeight: 700, color: 'var(--navy)', marginBottom: '1rem', fontSize: '1.15rem' }}>Demo Accounts Matrix</h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1.25rem', lineHeight: '1.4' }}>
+            Click any system role card below to authenticate and test customized access control.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -93,64 +93,36 @@ export const Login: React.FC = () => {
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '10px', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left', width: '100%' }}
               disabled={loading}
             >
-              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>SA</div>
+              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem', background: 'var(--navy)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: 700 }}>SA</div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>System Administrator</strong>
                 <span style={{ fontSize: '0.75rem', color: 'var(--error)', fontWeight: 600 }}>SYSTEM ADMIN &bull; IT</span>
               </div>
             </button>
 
-            <button 
-              onClick={() => handleDemoLogin('dept-admin')} 
-              className="btn-demo-login" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '10px', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left', width: '100%' }}
-              disabled={loading}
-            >
-              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>MM</div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>Manoj Mishra</strong>
-                <span style={{ fontSize: '0.75rem', color: 'var(--accent-blue)', fontWeight: 600 }}>DEPT ADMIN &bull; Transmission</span>
-              </div>
-            </button>
+            <div style={{ borderTop: '1px solid var(--border-color)', margin: '0.5rem 0', paddingTop: '0.5rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Officials Matrix</span>
+            </div>
 
             <button 
-              onClick={() => handleDemoLogin('approver')} 
+              onClick={() => handleDemoLogin('official-mgr')} 
               className="btn-demo-login" 
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '10px', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left', width: '100%' }}
               disabled={loading}
             >
-              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>DO</div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>Director Operations</strong>
-                <span style={{ fontSize: '0.75rem', color: 'var(--warning)', fontWeight: 600 }}>APPROVER &bull; Generation</span>
-              </div>
-            </button>
-
-            <button 
-              onClick={() => handleDemoLogin('editor')} 
-              className="btn-demo-login" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '10px', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left', width: '100%' }}
-              disabled={loading}
-            >
-              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>SD</div>
+              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem', background: 'var(--accent-blue)', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', fontWeight: 700 }}>SD</div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>Sasmita Dash</strong>
-                <span style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 600 }}>EDITOR &bull; Generation</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 600 }}>OFFICIAL &bull; Generation &bull; Manager</span>
               </div>
             </button>
 
-            <button 
-              onClick={() => handleDemoLogin('viewer')} 
-              className="btn-demo-login" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '10px', background: '#FFFFFF', cursor: 'pointer', textAlign: 'left', width: '100%' }}
-              disabled={loading}
-            >
-              <div className="avatar-circle" style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}>RP</div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <strong style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>Ranjan Pattnaik</strong>
-                <span style={{ fontSize: '0.75rem', color: 'var(--primary-blue)', fontWeight: 600 }}>VIEWER &bull; Finance</span>
-              </div>
-            </button>
+            <div style={{ borderTop: '1px solid var(--border-color)', margin: '0.5rem 0', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Viewer (No Login)</span>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
+                Public records are accessible without signing in. Click the <a href="#home" style={{ color: 'var(--primary-blue)', fontWeight: 600 }}>Public Portal</a> or <a href="#public-documents" style={{ color: 'var(--primary-blue)', fontWeight: 600 }}>Public Documents</a> links to explore guest actions.
+              </p>
+            </div>
           </div>
         </div>
 

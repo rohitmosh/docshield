@@ -9,6 +9,7 @@ import { InternalLayout } from './components/layout/InternalLayout';
 
 // Features
 import { Home } from './features/home/Home';
+import { About } from './features/home/About';
 import { PublicDocuments } from './features/repository/PublicDocuments';
 import { Login } from './features/auth/Login';
 import { Dashboard } from './features/dashboard/Dashboard';
@@ -16,7 +17,6 @@ import { Repository } from './features/repository/Repository';
 import { SearchConsole } from './features/search/SearchConsole';
 import { SecurityVault } from './features/security/SecurityVault';
 import { AuditLog } from './features/audit/AuditLog';
-import { Workflows } from './features/workflows/Workflows';
 import { Administration } from './features/admin/Administration';
 import { Profile } from './features/profile/Profile';
 import { DocumentViewer } from './features/repository/DocumentViewer';
@@ -34,6 +34,11 @@ const AppContent: React.FC = () => {
   switch (route) {
     case 'home':
       content = <Home />;
+      layoutType = 'public';
+      break;
+
+    case 'about':
+      content = <About />;
       layoutType = 'public';
       break;
 
@@ -93,16 +98,6 @@ const AppContent: React.FC = () => {
         layoutType = 'public';
       } else {
         content = <AuditLog />;
-        layoutType = 'internal';
-      }
-      break;
-
-    case 'workflows':
-      if (isAnonymous || !['EDITOR', 'APPROVER', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role)) {
-        content = <Login />;
-        layoutType = 'public';
-      } else {
-        content = <Workflows />;
         layoutType = 'internal';
       }
       break;

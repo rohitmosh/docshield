@@ -4,16 +4,16 @@ import { useAuth } from '../../context/AuthContext';
 export const Profile: React.FC = () => {
   const { user } = useAuth();
 
-  // Mapping RBAC permissions checklist
+  // Mapping permissions checklist based on rank & capabilities
   const permissions = [
     { key: 'browse', name: 'Browse public portal', desc: 'Allows access to search and view public OHPC declarations.', allowed: true },
-    { key: 'view', name: 'View secure vaults', desc: 'Allows access to search and view restricted/confidential files in authorized departments.', allowed: ['VIEWER', 'EDITOR', 'APPROVER', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) },
-    { key: 'upload', name: 'Upload / Checkout documents', desc: 'Allows adding new documents, creating folders, and checking out documents for editing.', allowed: ['EDITOR', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) },
-    { key: 'edit', name: 'Commit document modifications', desc: 'Allows saving metadata revisions and updates to files checked out by the user.', allowed: ['EDITOR', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) },
-    { key: 'workflow', name: 'Approve workflow submissions', desc: 'Allows publishing draft or pending files to make them active.', allowed: ['APPROVER', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) },
-    { key: 'perms', name: 'Manage files access control', desc: 'Allows setting department-specific access limits on files and folders.', allowed: ['DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) },
-    { key: 'audit', name: 'Read compliance logs', desc: 'Allows full visibility into system audit ledger operations history.', allowed: ['DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) },
-    { key: 'admin', name: 'Lifecycle & Webhooks configuration', desc: 'Allows purge management, webhook setup, and API keys updates.', allowed: ['DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role) }
+    { key: 'view', name: 'View secure vaults', desc: 'Allows access to search and view restricted/confidential files in authorized departments.', allowed: user.role !== 'ANONYMOUS' },
+    { key: 'upload', name: 'Upload / Checkout documents', desc: 'Allows adding new documents, creating folders, and checking out documents for editing.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_edit === 1 },
+    { key: 'edit', name: 'Commit document modifications', desc: 'Allows saving metadata revisions and updates to files checked out by the user.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_edit === 1 },
+    { key: 'workflow', name: 'Approve workflow submissions', desc: 'Allows publishing draft or pending files to make them active.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_approve === 1 },
+    { key: 'perms', name: 'Manage files access control', desc: 'Allows setting department-specific access limits on files and folders.', allowed: user.role === 'SYSTEM_ADMIN' },
+    { key: 'audit', name: 'Read compliance logs', desc: 'Allows full visibility into system audit ledger operations history.', allowed: user.role === 'SYSTEM_ADMIN' },
+    { key: 'admin', name: 'Lifecycle & Webhooks configuration', desc: 'Allows purge management, webhook setup, and API keys updates.', allowed: user.role === 'SYSTEM_ADMIN' }
   ];
 
   return (
@@ -30,8 +30,8 @@ export const Profile: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
             <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Active Role:</span>
-            <span className={`badge-classification ${user.role === 'SYSTEM_ADMIN' || user.role === 'DEPT_ADMIN' ? 'secret' : user.role === 'APPROVER' ? 'confidential' : user.role === 'ANONYMOUS' ? 'public' : 'restricted'}`} style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
-              {user.role.replace('_', ' ')}
+            <span className={`badge-classification ${user.role === 'SYSTEM_ADMIN' ? 'secret' : user.role === 'ANONYMOUS' ? 'public' : 'restricted'}`} style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+              {user.role === 'SYSTEM_ADMIN' ? 'SYSTEM ADMIN' : user.role === 'ANONYMOUS' ? 'GUEST' : `OFFICIAL (${user.rank})`}
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>

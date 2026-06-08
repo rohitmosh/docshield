@@ -4,6 +4,13 @@ exports.runMigrations = runMigrations;
 const db_1 = require("../config/db");
 function runMigrations() {
     console.log('Executing Database Schema Migrations...');
+    // Drop tables for a clean refresh with new schemas
+    db_1.db.exec('DROP TABLE IF EXISTS file_versions;');
+    db_1.db.exec('DROP TABLE IF EXISTS files;');
+    db_1.db.exec('DROP TABLE IF EXISTS folders;');
+    db_1.db.exec('DROP TABLE IF EXISTS users;');
+    db_1.db.exec('DROP TABLE IF EXISTS audit_logs;');
+    db_1.db.exec('DROP TABLE IF EXISTS webhook_config;');
     // 1. Users table
     db_1.db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -13,6 +20,9 @@ function runMigrations() {
       role TEXT NOT NULL,
       dept TEXT NOT NULL,
       avatar TEXT,
+      rank TEXT,
+      can_edit INTEGER DEFAULT 0,
+      can_approve INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);

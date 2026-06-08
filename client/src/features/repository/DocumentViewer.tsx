@@ -143,7 +143,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
     );
   };
 
-  const isEditor = ['EDITOR', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role);
+  const isEditor = user.role === 'SYSTEM_ADMIN' || user.can_edit === 1;
 
   return (
     <div className="viewer-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem' }}>
@@ -270,7 +270,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
         {/* Action Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
           {/* Prevent Viewers from downloading CONFIDENTIAL/SECRET */}
-          {!(user.role === 'VIEWER' && ['CONFIDENTIAL', 'SECRET'].includes(doc.classification)) && (
+          {!(user.role === 'OFFICIAL' && user.can_edit === 0 && ['CONFIDENTIAL', 'SECRET'].includes(doc.classification)) && (
             <button onClick={handleDownload} className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.65rem' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download Document

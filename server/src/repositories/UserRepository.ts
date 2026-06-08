@@ -12,4 +12,16 @@ export class UserRepository {
     const query = db.prepare('SELECT * FROM users');
     return query.all() as User[];
   }
+
+  static update(id: string, fields: Partial<User>): void {
+    const keys = Object.keys(fields);
+    if (keys.length === 0) return;
+
+    const setClause = keys.map(k => `${k} = ?`).join(', ');
+    const values = keys.map(k => fields[k as keyof typeof fields]);
+
+    const query = db.prepare(`UPDATE users SET ${setClause} WHERE id = ?`);
+    query.run(...values, id);
+  }
 }
+

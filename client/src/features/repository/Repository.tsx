@@ -51,6 +51,13 @@ export const Repository: React.FC = () => {
   const [bulkMoveTargetFolderId, setBulkMoveTargetFolderId] = useState('root');
   const [allSystemFolders, setAllSystemFolders] = useState<Folder[]>([]);
 
+  // Search Engine States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [parsedQueryText, setParsedQueryText] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searchResults, setSearchResults] = useState<File[]>([]);
+  const [allFilesForSearch, setAllFilesForSearch] = useState<File[]>([]);
+
   // 1. Fetch Repository Vault content
   const loadVault = useCallback(async () => {
     try {
@@ -58,10 +65,149 @@ export const Repository: React.FC = () => {
       setFolders(data.folders || []);
       setFiles(data.files || []);
       setSelectedFileIds(new Set());
+
+      // Fetch all files to populate/sync logical search index
+      const allData = await apiRequest('/documents/vault?all=true');
+      setAllFilesForSearch(allData.files || []);
     } catch (e) {
       console.error('Error loading vault:', e);
     }
   }, [currentFolderId, apiRequest]);
+
+  const executeBooleanSearch = (query: string, doc: File): { matches: boolean; evalStr: string } => {
+    let q = query.toLowerCase().trim();
+    const searchContent = `${doc.name} ${doc.category} ${doc.department} ${doc.ocr_text} ${doc.tags.join(" ")}`.toLowerCase();
+
+    // 1. Wildcard Check
+    if (q.includes('*')) {
+      const parts = q.split('*');
+      const regexStr = parts.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*');
+      const rx = new RegExp(regexStr);
+      return {
+        matches: rx.test(searchContent),
+        evalStr: `regex(/${regexStr}/)`
+      };
+    }
+
+    // 2. Boolean parsing (AND, OR, NOT)
+    if (q.includes(' and ') || q.includes(' or ') || q.includes(' not ') || q.startsWith('not ')) {
+      let evalStr = q;
+      const wordRegex = /[a-z0-9]+/g;
+      let match;
+      const replacements: Array<{ word: string; start: number; end: number }> = [];
+      
+      while ((match = wordRegex.exec(q)) !== null) {
+        const word = match[0];
+        if (word !== 'and' && word !== 'or' && word !== 'not') {
+          replacements.push({
+            word,
+            start: match.index,
+            end: match.index + word.length
+          });
+        }
+      }
+
+      // Replace from end to keep indexes valid
+      replacements.sort((a, b) => b.start - a.start).forEach(rep => {
+        const check = `searchContent.includes('${rep.word}')`;
+        evalStr = evalStr.substring(0, rep.start) + check + evalStr.substring(rep.end);
+      });
+
+      evalStr = evalStr.replace(/\band\b/g, '&&')
+                       .replace(/\bor\b/g, '||')
+                       .replace(/\bnot\b/g, '&& !');
+                       
+      evalStr = evalStr.replace(/&&\s*&&/g, '&&')
+                       .replace(/\|\|\s*&&/g, '||')
+                       .replace(/^\s*&&\s*/g, '');
+
+      try {
+        const fn = new Function('searchContent', `return (${evalStr});`);
+        return {
+          matches: fn(searchContent),
+          evalStr
+        };
+      } catch (e) {
+        const fallbackWord = q.replace(/(and|or|not)/g, '').trim();
+        return {
+          matches: searchContent.includes(fallbackWord),
+          evalStr: `fallback(includes('${fallbackWord}'))`
+        };
+      }
+    }
+
+    // 3. Simple text fallback
+    return {
+      matches: searchContent.includes(q),
+      evalStr: `searchContent.includes('${q}')`
+    };
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setParsedQueryText('');
+      setHasSearched(false);
+      return;
+    }
+
+    const matchedFiles: File[] = [];
+    let queryRepresentationText = '';
+
+    allFilesForSearch.forEach(doc => {
+      const searchResult = executeBooleanSearch(searchQuery, doc);
+      if (searchResult.matches) {
+        matchedFiles.push(doc);
+      }
+      queryRepresentationText = searchResult.evalStr;
+    });
+
+    setSearchResults(matchedFiles);
+    setParsedQueryText(queryRepresentationText);
+    setHasSearched(true);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setParsedQueryText('');
+    setHasSearched(false);
+  };
+
+  const getFileSnippet = (doc: File, query: string) => {
+    let snippet = '...';
+    if (query) {
+      const cleanTerms = query.replace(/(AND|OR|NOT)/g, '').replace(/[*]/g, '').split(/\s+/).filter(t => t.trim().length > 2);
+      const foundText = doc.ocr_text || '';
+      
+      let matched = false;
+      cleanTerms.forEach(term => {
+        const idx = foundText.toLowerCase().indexOf(term.toLowerCase());
+        if (idx !== -1 && !matched) {
+          matched = true;
+          let sub = foundText.substring(Math.max(0, idx - 45), Math.min(foundText.length, idx + 85));
+          
+          let escapedSub = sub
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+          const regexTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(`(${regexTerm})`, 'gi');
+          escapedSub = escapedSub.replace(regex, '<mark style="background: rgba(245, 158, 11, 0.3); font-weight: 700; border-radius: 2px; padding: 1px 2px;">$1</mark>');
+          snippet = '...' + escapedSub.trim() + '...';
+        }
+      });
+      
+      if (!matched) {
+        snippet = (doc.ocr_text || '').substring(0, 90) + '...';
+      }
+    } else {
+      snippet = (doc.ocr_text || '').substring(0, 90) + '...';
+    }
+    return <span dangerouslySetInnerHTML={{ __html: snippet }} />;
+  };
 
   // 2. Fetch Breadcrumbs list
   const loadBreadcrumbs = useCallback(async () => {
@@ -408,8 +554,8 @@ export const Repository: React.FC = () => {
   };
 
   const isAllSelected = files.length > 0 && selectedFileIds.size === files.length;
-  const canUpload = ['EDITOR', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role);
-  const canManagePerms = ['DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role);
+  const canUpload = user.role === 'SYSTEM_ADMIN' || user.can_edit === 1;
+  const canManagePerms = user.role === 'SYSTEM_ADMIN';
 
   return (
     <div className="repository-view" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -449,8 +595,26 @@ export const Repository: React.FC = () => {
         </div>
       </div>
 
+      {/* Integrated Logical Search Bar */}
+      <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.75rem', background: '#FFFFFF', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', background: 'var(--bg-light)', borderRadius: '8px', padding: '0 1rem', border: '1px solid var(--border-color)' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem', color: 'var(--text-muted)' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input 
+            type="text" 
+            style={{ border: 'none', background: 'none', width: '100%', outline: 'none', padding: '0.6rem 0', fontSize: '0.9rem' }} 
+            placeholder="Search documents by OCR content or keywords (e.g. turbine AND overhaul NOT generator)..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="btn-primary" style={{ padding: '0 1.5rem', fontSize: '0.85rem', fontWeight: 700 }}>Search Vault</button>
+        {hasSearched && (
+          <button type="button" className="btn-secondary" onClick={handleClearSearch} style={{ padding: '0 1.25rem', fontSize: '0.85rem' }}>Clear Search</button>
+        )}
+      </form>
+
       {/* Bulk Operations Bar */}
-      {selectedFileIds.size > 0 && (
+      {!hasSearched && selectedFileIds.size > 0 && (
         <div id="repo-bulk-bar" className="bulk-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(8, 59, 138, 0.05)', padding: '0.75rem 1.25rem', borderRadius: '10px', border: '1px solid var(--primary-blue)' }}>
           <span id="repo-bulk-selected-txt" style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary-blue)' }}>{selectedFileIds.size} items selected</span>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -461,85 +625,44 @@ export const Repository: React.FC = () => {
         </div>
       )}
 
-      {/* Folders and Files listings */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        
-        {/* Child Folders Grid */}
-        {folders.length > 0 && (
-          <div id="repo-folders-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
-            {folders.map(folder => (
-              <div 
-                key={folder.id} 
-                className="folder-card" 
-                onClick={() => setCurrentFolderId(folder.id)}
-                style={{ display: 'flex', flexDirection: 'column', padding: '1.25rem', background: '#FFFFFF', borderRadius: '12px', border: '1px solid var(--border-color)', cursor: 'pointer', position: 'relative' }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <div className="folder-icon" style={{ color: 'var(--primary-blue)' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
-                  </div>
-                  {canManagePerms && (
-                    <button 
-                      className="btn-icon folder-perm-btn" 
-                      title="Manage Permissions"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openPermissions(folder, 'folder');
-                      }}
-                      style={{ padding: '2px', color: 'var(--text-muted)' }}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                    </button>
-                  )}
-                </div>
-                <div className="folder-name" style={{ fontWeight: 600, color: 'var(--navy)', fontSize: '0.95rem' }}>{folder.name}</div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Conditional Rendering: Search Results vs Directory Explorer */}
+      {hasSearched ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {parsedQueryText && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F8FAFC', padding: '0.75rem 1.25rem', borderRadius: '10px', border: '1px solid var(--border-color)', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>Logical AST Evaluation Schema:</span>
+              <code style={{ background: '#E2E8F0', padding: '2px 6px', borderRadius: '4px', color: 'var(--navy)' }}>{parsedQueryText}</code>
+            </div>
+          )}
 
-        {/* Files Table List */}
-        <div className="section-card">
-          <div className="table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '40px' }}>
-                    <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} />
-                  </th>
-                  <th>Name</th>
-                  <th>Classification</th>
-                  <th>Department</th>
-                  <th>Status</th>
-                  <th>Checked Out By</th>
-                  <th>Last Modified</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="repo-files-table-body">
-                {files.length === 0 && folders.length === 0 ? (
+          <div className="section-card">
+            <div className="section-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+              <h4 style={{ fontWeight: 800, color: 'var(--navy)', fontSize: '1.1rem', margin: 0 }}>Query Results ({searchResults.length} matching entries)</h4>
+            </div>
+
+            <div className="table-wrapper">
+              <table className="data-table">
+                <thead>
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-                      <p style={{ fontWeight: 600 }}>This vault directory is empty</p>
-                    </td>
+                    <th>Resource Name</th>
+                    <th>Classification</th>
+                    <th>Department</th>
+                    <th>Match Context (OCR Snippet)</th>
+                    <th>Last Modified</th>
+                    <th>Actions</th>
                   </tr>
-                ) : (
-                  files.map(doc => {
-                    const isSelected = selectedFileIds.has(doc.id);
-                    const isLocked = doc.locked_by !== null;
-                    const isLockedByMe = isLocked && doc.locked_by === user.name;
-                    const canEdit = ['EDITOR', 'DEPT_ADMIN', 'SYSTEM_ADMIN'].includes(user.role);
-                    const showEdit = canEdit && (!isLocked || isLockedByMe);
-
-                    return (
+                </thead>
+                <tbody>
+                  {searchResults.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2" style={{ marginBottom: '1rem' }}><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <p style={{ fontWeight: 600 }}>No files matched your boolean criteria</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    searchResults.map(doc => (
                       <tr key={doc.id}>
-                        <td>
-                          <input 
-                            type="checkbox" 
-                            checked={isSelected} 
-                            onChange={e => handleSelectFile(doc.id, e.target.checked)}
-                          />
-                        </td>
                         <td>
                           <div className="doc-name-cell" style={{ display: 'flex', alignItems: 'center' }}>
                             {getFileIcon(doc.type)}
@@ -548,56 +671,160 @@ export const Repository: React.FC = () => {
                         </td>
                         <td><span className={`badge-classification ${doc.classification.toLowerCase()}`}>{doc.classification}</span></td>
                         <td><span style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--text-muted)' }}>{doc.department}</span></td>
-                        <td><span className={`badge-status ${doc.status}`}>{doc.status}</span></td>
-                        <td><span style={{ fontSize: '0.8rem', fontWeight: 500 }}>{doc.locked_by || '-'}</span></td>
-                        <td>{new Date(doc.modified_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                         <td>
-                          <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
-                            {doc.classification !== 'PUBLIC' && (
-                              <button onClick={() => handleInspectSecurity(doc.id)} className="btn-icon" title="Inspect Security Wrapper" style={{ color: 'var(--accent-blue)' }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                              </button>
-                            )}
-                            
-                            {canEdit && (
-                              <button onClick={() => handleToggleLock(doc.id)} className="btn-icon" title={isLocked ? 'Unlock File' : 'Lock/Checkout'}>
-                                {isLocked ? (
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                                ) : (
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>
-                                )}
-                              </button>
-                            )}
-
-                            {canManagePerms && (
-                              <button onClick={() => openPermissions(doc, 'file')} className="btn-icon" title="Manage Permissions">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                              </button>
-                            )}
-
-                            {showEdit && (
-                              <button onClick={() => openEditMeta(doc)} className="btn-icon" title="Edit Metadata">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                              </button>
-                            )}
-
-                            {showEdit && (
-                              <button onClick={() => handleDeleteFile(doc.id, doc.name)} className="btn-icon" title="Delete" style={{ color: 'var(--error)' }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
-                              </button>
-                            )}
+                          <div style={{ maxWidth: '380px', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                            {getFileSnippet(doc, searchQuery)}
                           </div>
                         </td>
+                        <td>{new Date(doc.modified_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                        <td>
+                          <a href={`#document-viewer?id=${doc.id}`} className="btn-text-action" style={{ textDecoration: 'none' }}>View Record</a>
+                        </td>
                       </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {/* Child Folders Grid */}
+          {folders.length > 0 && (
+            <div id="repo-folders-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+              {folders.map(folder => (
+                <div 
+                  key={folder.id} 
+                  className="folder-card" 
+                  onClick={() => setCurrentFolderId(folder.id)}
+                  style={{ display: 'flex', flexDirection: 'column', padding: '1.25rem', background: '#FFFFFF', borderRadius: '12px', border: '1px solid var(--border-color)', cursor: 'pointer', position: 'relative' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <div className="folder-icon" style={{ color: 'var(--primary-blue)' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+                    </div>
+                    {canManagePerms && (
+                      <button 
+                        className="btn-icon folder-perm-btn" 
+                        title="Manage Permissions"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openPermissions(folder, 'folder');
+                        }}
+                        style={{ padding: '2px', color: 'var(--text-muted)' }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                      </button>
+                    )}
+                  </div>
+                  <div className="folder-name" style={{ fontWeight: 600, color: 'var(--navy)', fontSize: '0.95rem' }}>{folder.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
 
-      </div>
+          {/* Files Table List */}
+          <div className="section-card">
+            <div className="table-wrapper">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '40px' }}>
+                      <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} />
+                    </th>
+                    <th>Name</th>
+                    <th>Classification</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Checked Out By</th>
+                    <th>Last Modified</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="repo-files-table-body">
+                  {files.length === 0 && folders.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                        <p style={{ fontWeight: 600 }}>This vault directory is empty</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    files.map(doc => {
+                      const isSelected = selectedFileIds.has(doc.id);
+                      const isLocked = doc.locked_by !== null;
+                      const isLockedByMe = isLocked && doc.locked_by === user.name;
+                      const canEdit = user.role === 'SYSTEM_ADMIN' || user.can_edit === 1;
+                      const showEdit = canEdit && (!isLocked || isLockedByMe);
+
+                      return (
+                        <tr key={doc.id}>
+                          <td>
+                            <input 
+                              type="checkbox" 
+                              checked={isSelected} 
+                              onChange={e => handleSelectFile(doc.id, e.target.checked)}
+                            />
+                          </td>
+                          <td>
+                            <div className="doc-name-cell" style={{ display: 'flex', alignItems: 'center' }}>
+                              {getFileIcon(doc.type)}
+                              <a href={`#document-viewer?id=${doc.id}`} style={{ fontWeight: 600, color: 'var(--navy)', textDecoration: 'none' }}>{doc.name}</a>
+                            </div>
+                          </td>
+                          <td><span className={`badge-classification ${doc.classification.toLowerCase()}`}>{doc.classification}</span></td>
+                          <td><span style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--text-muted)' }}>{doc.department}</span></td>
+                          <td><span className={`badge-status ${doc.status}`}>{doc.status}</span></td>
+                          <td><span style={{ fontSize: '0.8rem', fontWeight: 500 }}>{doc.locked_by || '-'}</span></td>
+                          <td>{new Date(doc.modified_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+                              {doc.classification !== 'PUBLIC' && (
+                                <button onClick={() => handleInspectSecurity(doc.id)} className="btn-icon" title="Inspect Security Wrapper" style={{ color: 'var(--accent-blue)' }}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                                </button>
+                              )}
+                              
+                              {canEdit && (
+                                <button onClick={() => handleToggleLock(doc.id)} className="btn-icon" title={isLocked ? 'Unlock File' : 'Lock/Checkout'}>
+                                  {isLocked ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                  ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>
+                                  )}
+                                </button>
+                              )}
+
+                              {canManagePerms && (
+                                <button onClick={() => openPermissions(doc, 'file')} className="btn-icon" title="Manage Permissions">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                                </button>
+                              )}
+
+                              {showEdit && (
+                                <button onClick={() => openEditMeta(doc)} className="btn-icon" title="Edit Metadata">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                </button>
+                              )}
+
+                              {showEdit && (
+                                <button onClick={() => handleDeleteFile(doc.id, doc.name)} className="btn-icon" title="Delete" style={{ color: 'var(--error)' }}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ----------------- MODAL DIALOGS ----------------- */}
 

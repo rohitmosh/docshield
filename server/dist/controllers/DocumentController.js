@@ -138,8 +138,8 @@ class DocumentController {
                 }
             }
             // Check viewer download permissions
-            if (user.role === 'VIEWER' && ['CONFIDENTIAL', 'SECRET'].includes(file.classification)) {
-                res.status(403).json({ error: 'Access Denied: VIEWERS cannot download CONFIDENTIAL/SECRET files' });
+            if (user.role === 'OFFICIAL' && user.can_edit === 0 && ['CONFIDENTIAL', 'SECRET'].includes(file.classification)) {
+                res.status(403).json({ error: 'Access Denied: Read-only officials cannot download CONFIDENTIAL/SECRET files' });
                 return;
             }
             // Serve download attachment

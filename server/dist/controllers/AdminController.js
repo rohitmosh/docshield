@@ -4,6 +4,7 @@ exports.AdminController = void 0;
 const LifecycleService_1 = require("../services/LifecycleService");
 const db_1 = require("../config/db");
 const AuditRepository_1 = require("../repositories/AuditRepository");
+const UserRepository_1 = require("../repositories/UserRepository");
 class AdminController {
     static getExpired(req, res) {
         try {
@@ -76,6 +77,22 @@ class AdminController {
             };
             AuditRepository_1.AuditRepository.create(auditLog);
             res.status(200).json({ success: true, payload });
+        }
+        catch (e) {
+            res.status(500).json({ error: e.message });
+        }
+    }
+    static updateUser(req, res) {
+        try {
+            const { id } = req.params;
+            const { dept, rank, can_edit, can_approve } = req.body;
+            UserRepository_1.UserRepository.update(id, {
+                dept,
+                rank,
+                can_edit: can_edit ? 1 : 0,
+                can_approve: can_approve ? 1 : 0
+            });
+            res.status(200).json({ success: true });
         }
         catch (e) {
             res.status(500).json({ error: e.message });

@@ -13,12 +13,13 @@ export class AuthController {
       // Fallback matching for text input box login
       if (username) {
         const normalized = username.trim().toLowerCase();
-        if (normalized.startsWith('viewer')) userId = 'viewer';
-        else if (normalized.startsWith('editor')) userId = 'editor';
-        else if (normalized.startsWith('approver')) userId = 'approver';
-        else if (normalized.startsWith('dept-admin')) userId = 'dept-admin';
-        else if (normalized.startsWith('admin') || normalized.startsWith('sys')) userId = 'sys-admin';
-        else userId = 'viewer'; // default fallback
+        if (normalized.includes('admin') || normalized.includes('sys')) {
+          userId = 'sys-admin';
+        } else if (normalized.includes('sasmita') || normalized.includes('mgr') || normalized.includes('manager') || normalized.includes('official') || normalized.includes('dir') || normalized.includes('exec')) {
+          userId = 'official-mgr';
+        } else {
+          userId = 'official-mgr'; // default fallback
+        }
       }
 
       if (!userId) {
@@ -40,7 +41,10 @@ export class AuthController {
           email: user.email,
           role: user.role,
           dept: user.dept,
-          avatar: user.avatar
+          avatar: user.avatar,
+          rank: user.rank,
+          can_edit: user.can_edit,
+          can_approve: user.can_approve
         },
         env.JWT_SECRET,
         { expiresIn: '24h' }
@@ -54,7 +58,10 @@ export class AuthController {
           email: user.email,
           role: user.role,
           dept: user.dept,
-          avatar: user.avatar
+          avatar: user.avatar,
+          rank: user.rank,
+          can_edit: user.can_edit,
+          can_approve: user.can_approve
         }
       });
     } catch (error: any) {

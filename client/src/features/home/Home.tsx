@@ -24,11 +24,6 @@ export const Home: React.FC = () => {
     fetchHomeData();
   }, [apiRequest]);
 
-  const announcements = [
-    { id: 1, date: '07-Jun-2026', title: 'New Encryption Guidelines v4.2 Enforced', desc: 'All drawings related to Balimela Hydro Project must be classified under CONFIDENTIAL and encrypted.', dept: 'IT' },
-    { id: 2, date: '02-Jun-2026', title: 'Rengali Hydel Station Annual Maintenance Schedule', desc: 'Annual technical overhaul schedules for Unit 3 and 4 have been published for vendor audit reviews.', dept: 'Generation' },
-    { id: 3, date: '28-May-2026', title: 'Retention Schedule Update for Procurement Tenders', desc: 'Procurement documents are now moved to a 5-year retention period prior to secure purge cycles.', dept: 'Legal' }
-  ];
 
   const getFileIcon = (type: string) => {
     let color = '#3B82F6';
@@ -64,6 +59,9 @@ export const Home: React.FC = () => {
     <div className="home-view">
       <div className="hero-section">
         <div className="hero-container">
+          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+            <img src="/docshield_full.png" alt="DocShield logo" style={{ height: '70px', objectFit: 'contain' }} />
+          </div>
           <div className="badge-tagline">Secure Corporate Repository</div>
           <h1 className="hero-title">Odisha Hydro Power Corporation <span>DocShield</span></h1>
           <p className="hero-subtitle">Access public utilities, project declarations, notifications, and secure corporate records through our unified regulatory compliance platform.</p>
@@ -108,7 +106,7 @@ export const Home: React.FC = () => {
       </div>
 
       {/* Main Info Columns */}
-      <div className="home-content-columns" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.2fr', gap: '2rem', padding: '0 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="home-content-columns" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem', padding: '0 2rem 4rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Recent Public Document Release */}
         <div className="section-card">
           <div className="section-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
@@ -152,27 +150,6 @@ export const Home: React.FC = () => {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        {/* Announcements Column */}
-        <div className="section-card">
-          <div className="section-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-            <h3 style={{ fontWeight: 800, color: 'var(--navy)', fontSize: '1.25rem' }}>Notice Board</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Regulatory guidelines and directives.</p>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {announcements.map(ann => (
-              <div key={ann.id} className="announcement-item" style={{ borderLeft: '3px solid var(--primary-blue)', paddingLeft: '1rem' }}>
-                <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                  <span>{ann.date}</span>
-                  <span>&bull;</span>
-                  <span style={{ color: 'var(--primary-blue)' }}>{ann.dept}</span>
-                </div>
-                <div style={{ fontWeight: 700, color: 'var(--navy)', fontSize: '0.95rem', marginBottom: '0.25rem' }}>{ann.title}</div>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>{ann.desc}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>
