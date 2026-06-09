@@ -110,7 +110,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Handle CSV or downloads vs standard JSON
     const contentType = response.headers.get('Content-Type') || '';
-    if (contentType.includes('text/csv') || contentType.includes('application/octet-stream')) {
+    const contentDisposition = response.headers.get('Content-Disposition') || '';
+    if (
+      contentType.includes('text/csv') ||
+      contentType.includes('application/octet-stream') ||
+      contentType.includes('text/plain') ||
+      contentType.includes('application/pdf') ||
+      contentDisposition.includes('attachment')
+    ) {
       return response;
     }
 

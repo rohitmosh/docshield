@@ -6,14 +6,14 @@ import { initCryptoKeys } from './utils/cryptoUtils';
 
 function bootstrap() {
   try {
-    // 1. Run migrations to ensure schema tables exist
+    // 1. Setup cryptographic wrapper HSM RSA keys
+    initCryptoKeys();
+
+    // 2. Run migrations to ensure schema tables exist
     runMigrations();
 
-    // 2. Populate tables with seed data if fresh
+    // 3. Populate tables with seed data if fresh
     runSeeds();
-
-    // 3. Setup cryptographic wrapper HSM RSA keys
-    initCryptoKeys();
 
     // 4. Start HTTP server
     app.listen(env.PORT, () => {

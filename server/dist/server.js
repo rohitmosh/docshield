@@ -10,12 +10,12 @@ const seedData_1 = require("./database/seedData");
 const cryptoUtils_1 = require("./utils/cryptoUtils");
 function bootstrap() {
     try {
-        // 1. Run migrations to ensure schema tables exist
-        (0, migrations_1.runMigrations)();
-        // 2. Populate tables with seed data if fresh
-        (0, seedData_1.runSeeds)();
-        // 3. Setup cryptographic wrapper HSM RSA keys
+        // 1. Setup cryptographic wrapper HSM RSA keys
         (0, cryptoUtils_1.initCryptoKeys)();
+        // 2. Run migrations to ensure schema tables exist
+        (0, migrations_1.runMigrations)();
+        // 3. Populate tables with seed data if fresh
+        (0, seedData_1.runSeeds)();
         // 4. Start HTTP server
         app_1.default.listen(env_1.env.PORT, () => {
             console.log(`===================================================`);

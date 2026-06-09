@@ -128,7 +128,8 @@ export const Dashboard: React.FC = () => {
                             label === 'RESTRICTED' ? 'var(--color-restricted)' :
                             label === 'CONFIDENTIAL' ? 'var(--color-confidential)' : 'var(--color-secret)';
               return (
-                <div key={label} className="bar-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '60px' }}>
+                <div key={label} className="bar-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '60px', height: '100%', justifyContent: 'flex-end' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '0.25rem' }}>{val}</span>
                   <div 
                     className="bar-graphic" 
                     style={{ background: color, height: `${heightPercent}%`, width: '32px', borderRadius: '6px 6px 0 0', position: 'relative', transition: 'height 0.3s ease' }} 

@@ -15,7 +15,6 @@ export const Administration: React.FC = () => {
     Legal: 0
   });
 
-  const [expiredFiles, setExpiredFiles] = useState<File[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [pendingDocs, setPendingDocs] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,11 +43,8 @@ export const Administration: React.FC = () => {
         }
       }
 
-      // 2. Load admin-only expired queue and profiles
+      // 2. Load admin-only profiles
       if (isSystemAdmin) {
-        const expiredData = await apiRequest('/admin/expired');
-        setExpiredFiles(expiredData || []);
-
         const profilesData = await apiRequest('/auth/profiles');
         setProfiles(profilesData.filter((u: any) => u.role === 'OFFICIAL'));
       }
@@ -65,18 +61,6 @@ export const Administration: React.FC = () => {
     loadAdminData();
   }, [loadAdminData]);
 
-  const handlePurge = async (docId: string, name: string) => {
-    if (!window.confirm(`CRITICAL COMPLIANCE NOTICE: Purging ${name} will permanently shred all ciphertext and signature blocks. Confirm?`)) {
-      return;
-    }
-    try {
-      await apiRequest(`/admin/purge/${docId}`, { method: 'POST' });
-      showToast(`${name} securely purged and shredded.`, 'success');
-      loadAdminData();
-    } catch (e: any) {
-      showToast(e.message || 'Purge failed', 'error');
-    }
-  };
 
   const handleApprove = async (docId: string, approve: boolean, name: string) => {
     try {
@@ -319,57 +303,6 @@ export const Administration: React.FC = () => {
             </div>
           </div>
 
-          {/* Compliance shredding queue (Visible to SYSTEM_ADMIN only) */}
-          <div className="section-card">
-            <h4 className="section-title" style={{ marginBottom: '1rem' }}>Compliance shredding queue</h4>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-              Documents that have exceeded their configured corporate retention schedule. Purging hard-deletes block payloads and issues a secure signed Certificate of Destruction.
-            </p>
-            
-            {loading ? (
-              <p style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>Loading expired queue...</p>
-            ) : (
-              <div className="table-wrapper" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Expired Resource</th>
-                      <th style={{ width: '120px' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {expiredFiles.length === 0 ? (
-                      <tr>
-                        <td colSpan={2} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                          No files currently flagged for lifecycle destruction.
-                        </td>
-                      </tr>
-                    ) : (
-                      expiredFiles.map(doc => (
-                        <tr key={doc.id}>
-                          <td>
-                            <div className="doc-name-cell" style={{ display: 'flex', alignItems: 'center', fontSize: '0.85rem' }}>
-                              {getFileIcon(doc.type)}
-                              <span>{doc.name}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <button 
-                              className="btn-primary" 
-                              onClick={() => handlePurge(doc.id, doc.name)}
-                              style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', background: 'var(--error)' }}
-                            >
-                              Purge / Shred
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
         </>
       )}
     </div>

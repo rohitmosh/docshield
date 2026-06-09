@@ -1880,3 +1880,67 @@ dialog::backdrop {
     grid-template-columns: 1fr;
   }
 }
+
+/* Print Overrides for Document Copy */
+@media print {
+  body, html {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  
+  /* Hide UI components, sidebar, header, control widgets, sidebar navigation, footers */
+  aside.sidebar,
+  header.app-header,
+  .viewer-bar,
+  aside.viewer-sidebar,
+  .quick-role-picker,
+  .btn-public-toggle,
+  .header-user-actions,
+  .public-header,
+  .public-footer,
+  .btn-primary,
+  .btn-secondary,
+  .toast-container,
+  .viewer-bar-title,
+  .viewer-controls,
+  /* Hide the cryptographic verification ledger wrapper */
+  .viewer-main > div:nth-child(3) {
+    display: none !important;
+  }
+
+  /* Span layout components to full-width */
+  .app-container,
+  .app-main,
+  .app-content,
+  .viewer-layout,
+  .viewer-main,
+  .viewer-content-pane {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  /* Make the document content pane cover the entire printed area */
+  .viewer-mock-page {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    color: #000000 !important;
+    background: #FFFFFF !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .viewer-mock-watermark {
+    opacity: 0.08 !important;
+  }
+}
