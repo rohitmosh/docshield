@@ -52,7 +52,10 @@ class DocumentService {
         AuditRepository_1.AuditRepository.create(log);
         return folder;
     }
-    static uploadDocument(name, size, category, department, classification, tags, retention, desc, parentId, user, ip) {
+    static uploadDocument(name, size, category, department, classification, tags, retention, desc, parentId, author, user, ip) {
+        if (user.role !== 'SYSTEM_ADMIN') {
+            throw new Error('Access Denied: Only administrators can upload documents.');
+        }
         const docId = 'doc-' + Math.random().toString(36).substring(2, 11);
         const fileType = name.split('.').pop()?.toUpperCase() || 'PDF';
         // 1. OCR text generation
@@ -81,7 +84,7 @@ class DocumentService {
         let signature;
         // 2. Encryption if not public
         if (classification !== 'PUBLIC') {
-            const cryptoEnvelope = (0, cryptoUtils_1.encryptDocument)(content, user.name);
+            const cryptoEnvelope = (0, cryptoUtils_1.encryptDocument)(content, author || user.name);
             ciphertext = cryptoEnvelope.ciphertext;
             wrappedKey = cryptoEnvelope.wrappedKey;
             signature = cryptoEnvelope.signature;
@@ -97,12 +100,12 @@ class DocumentService {
             classification,
             tags,
             version: 'v1.0',
-            status: classification === 'PUBLIC' ? 'published' : 'pending',
+            status: 'published', // Admin uploads: auto-published
             locked_by: null,
             retention_years: retention,
             created_time: Date.now(),
             modified_time: Date.now(),
-            author: user.name,
+            author: author || user.name,
             parent_id: parentId,
             ocr_text: ocrText,
             allowed_depts: allDepts,
@@ -113,9 +116,20 @@ class DocumentService {
             versions: [
                 {
                     version: 'v1.0',
-                    author: user.name,
+                    author: author || user.name,
                     timestamp: this.formatDate(new Date()),
-                    change_reason: 'Initial upload block initialization'
+                    change_reason: 'Initial upload block initialization',
+                    name,
+                    type: fileType,
+                    size,
+                    category,
+                    classification,
+                    tags,
+                    department,
+                    content,
+                    ciphertext,
+                    wrapped_key: wrappedKey,
+                    signature
                 }
             ]
         };
@@ -132,16 +146,17 @@ class DocumentService {
             ip_address: ip
         };
         AuditRepository_1.AuditRepository.create(log);
-        if (newDoc.status === 'published') {
-            triggerWebhook('document.published', { name: newDoc.name, id: newDoc.id });
-        }
+        triggerWebhook('document.published', { name: newDoc.name, id: newDoc.id });
         return newDoc;
     }
-    static updateMetadata(id, name, classification, category, tags, retention, changeReason, user, ip) {
+    static updateMetadata(id, name, classification, category, tags, retention, author, changeReason, user, ip) {
+        if (user.role !== 'SYSTEM_ADMIN') {
+            throw new Error('Access Denied: Only administrators can edit document metadata.');
+        }
         const file = FileRepository_1.FileRepository.findById(id);
         if (!file)
             throw new Error('File not found');
-        if (file.locked_by && file.locked_by !== user.name && user.role !== 'SYSTEM_ADMIN') {
+        if (file.locked_by && file.locked_by !== user.name) {
             throw new Error('File is checked out by another editor');
         }
         // Increment version (v1.0 -> v2.0)
@@ -156,11 +171,12 @@ class DocumentService {
         file.category = category;
         file.tags = tags;
         file.retention_years = retention;
+        file.author = author || file.author;
         file.version = nextVer;
         file.modified_time = Date.now();
         // Re-encrypt if encryption is enabled and classification isn't public
         if (classification !== 'PUBLIC') {
-            const cryptoEnvelope = (0, cryptoUtils_1.encryptDocument)(file.content, user.name);
+            const cryptoEnvelope = (0, cryptoUtils_1.encryptDocument)(file.content, file.author);
             file.ciphertext = cryptoEnvelope.ciphertext;
             file.wrapped_key = cryptoEnvelope.wrappedKey;
             file.signature = cryptoEnvelope.signature;
@@ -171,11 +187,23 @@ class DocumentService {
             file.signature = undefined;
         }
         FileRepository_1.FileRepository.updateMetadata(file);
+        // Save full snapshots to version history
         const versionLog = {
             version: nextVer,
-            author: user.name,
+            author: file.author,
             timestamp: this.formatDate(new Date()),
-            change_reason: changeReason || 'Metadata modifications applied'
+            change_reason: changeReason || 'Metadata modifications applied',
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            category: file.category,
+            classification: file.classification,
+            tags: file.tags,
+            department: file.department,
+            content: file.content,
+            ciphertext: file.ciphertext,
+            wrapped_key: file.wrapped_key,
+            signature: file.signature
         };
         FileRepository_1.FileRepository.addVersion(id, versionLog);
         // Audit Log

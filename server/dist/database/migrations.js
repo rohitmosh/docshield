@@ -11,6 +11,8 @@ function runMigrations() {
     db_1.db.exec('DROP TABLE IF EXISTS users;');
     db_1.db.exec('DROP TABLE IF EXISTS audit_logs;');
     db_1.db.exec('DROP TABLE IF EXISTS webhook_config;');
+    db_1.db.exec('DROP TABLE IF EXISTS tags;');
+    db_1.db.exec('DROP TABLE IF EXISTS departments;');
     // 1. Users table
     db_1.db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -63,7 +65,7 @@ function runMigrations() {
       signature TEXT
     );
   `);
-    // 4. File Versions table
+    // 4. File Versions table (extended with metadata and content snapshot columns)
     db_1.db.exec(`
     CREATE TABLE IF NOT EXISTS file_versions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,6 +74,17 @@ function runMigrations() {
       author TEXT NOT NULL,
       timestamp TEXT NOT NULL,
       change_reason TEXT NOT NULL,
+      name TEXT NOT NULL,
+      type TEXT NOT NULL,
+      size INTEGER NOT NULL,
+      category TEXT NOT NULL,
+      classification TEXT NOT NULL,
+      tags TEXT NOT NULL, -- JSON string array
+      department TEXT NOT NULL,
+      content TEXT NOT NULL,
+      ciphertext TEXT,
+      wrapped_key TEXT,
+      signature TEXT,
       FOREIGN KEY (file_id) REFERENCES files (id) ON DELETE CASCADE
     );
   `);
@@ -94,6 +107,20 @@ function runMigrations() {
       id TEXT PRIMARY KEY,
       url TEXT NOT NULL,
       event TEXT NOT NULL
+    );
+  `);
+    // 7. Tags table
+    db_1.db.exec(`
+    CREATE TABLE IF NOT EXISTS tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL
+    );
+  `);
+    // 8. Departments table
+    db_1.db.exec(`
+    CREATE TABLE IF NOT EXISTS departments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL
     );
   `);
     console.log('Migrations Completed Successfully.');

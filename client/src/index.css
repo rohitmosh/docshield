@@ -19,9 +19,8 @@
   
   /* Classification Badges */
   --color-public: #16A34A;
-  --color-restricted: #3B82F6;
+  --color-internal: #3B82F6;
   --color-confidential: #D97706;
-  --color-secret: #DC2626;
 
   /* Font Families */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -462,19 +461,14 @@ input, select, textarea {
   color: var(--color-public);
 }
 
-.badge-classification.restricted {
+.badge-classification.internal {
   background: rgba(59, 130, 246, 0.1);
-  color: var(--color-restricted);
+  color: var(--color-internal);
 }
 
 .badge-classification.confidential {
   background: rgba(217, 119, 6, 0.1);
   color: var(--color-confidential);
-}
-
-.badge-classification.secret {
-  background: rgba(220, 38, 38, 0.1);
-  color: var(--color-secret);
 }
 
 .badge-status {
@@ -1886,6 +1880,9 @@ dialog::backdrop {
   body, html {
     background: #FFFFFF !important;
     color: #000000 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
   
   /* Hide UI components, sidebar, header, control widgets, sidebar navigation, footers */
@@ -1918,6 +1915,10 @@ dialog::backdrop {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;

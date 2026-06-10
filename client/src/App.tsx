@@ -124,7 +124,8 @@ const AppContent: React.FC = () => {
 
     case 'document-viewer':
       const docId = queryParams.id || '';
-      content = <DocumentViewer docId={docId} />;
+      const version = queryParams.version || '';
+      content = <DocumentViewer docId={docId} version={version} />;
       layoutType = isAnonymous ? 'public' : 'internal';
       break;
 

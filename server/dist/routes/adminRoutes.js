@@ -13,4 +13,8 @@ router.get('/webhook', AdminController_1.AdminController.getWebhook);
 router.post('/webhook', AdminController_1.AdminController.saveWebhook);
 router.post('/webhook/test', AdminController_1.AdminController.testWebhook);
 router.put('/users/:id', AdminController_1.AdminController.updateUser);
+router.get('/tags', AdminController_1.AdminController.getTags);
+router.post('/tags', AdminController_1.AdminController.createTag);
+router.get('/departments', AdminController_1.AdminController.getDepartments);
+router.post('/departments', AdminController_1.AdminController.createDepartment);
 exports.default = router;

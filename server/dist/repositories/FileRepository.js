@@ -96,15 +96,58 @@ class FileRepository {
     }
     // Version history operations
     static findVersionsByFileId(fileId) {
-        const query = db_1.db.prepare('SELECT version, author, timestamp, change_reason FROM file_versions WHERE file_id = ? ORDER BY id DESC');
-        return query.all(fileId);
+        const query = db_1.db.prepare('SELECT * FROM file_versions WHERE file_id = ? ORDER BY id DESC');
+        const rows = query.all(fileId);
+        return rows.map(r => ({
+            version: r.version,
+            author: r.author,
+            timestamp: r.timestamp,
+            change_reason: r.change_reason,
+            name: r.name,
+            type: r.type,
+            size: r.size,
+            category: r.category,
+            classification: r.classification,
+            tags: JSON.parse(r.tags || '[]'),
+            department: r.department,
+            content: r.content,
+            ciphertext: r.ciphertext || undefined,
+            wrapped_key: r.wrapped_key || undefined,
+            signature: r.signature || undefined
+        }));
     }
     static addVersion(fileId, ver) {
         const stmt = db_1.db.prepare(`
-      INSERT INTO file_versions (file_id, version, author, timestamp, change_reason)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO file_versions (
+        file_id, version, author, timestamp, change_reason,
+        name, type, size, category, classification, tags,
+        department, content, ciphertext, wrapped_key, signature
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-        stmt.run(fileId, ver.version, ver.author, ver.timestamp, ver.change_reason);
+        stmt.run(fileId, ver.version, ver.author, ver.timestamp, ver.change_reason, ver.name, ver.type, ver.size, ver.category, ver.classification, JSON.stringify(ver.tags), ver.department, ver.content, ver.ciphertext || null, ver.wrapped_key || null, ver.signature || null);
+    }
+    static findVersion(fileId, version) {
+        const query = db_1.db.prepare('SELECT * FROM file_versions WHERE file_id = ? AND version = ?');
+        const r = query.get(fileId, version);
+        if (!r)
+            return null;
+        return {
+            version: r.version,
+            author: r.author,
+            timestamp: r.timestamp,
+            change_reason: r.change_reason,
+            name: r.name,
+            type: r.type,
+            size: r.size,
+            category: r.category,
+            classification: r.classification,
+            tags: JSON.parse(r.tags || '[]'),
+            department: r.department,
+            content: r.content,
+            ciphertext: r.ciphertext || undefined,
+            wrapped_key: r.wrapped_key || undefined,
+            signature: r.signature || undefined
+        };
     }
 }
 exports.FileRepository = FileRepository;

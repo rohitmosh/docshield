@@ -5,9 +5,10 @@ import type { File } from '../../types';
 
 interface DocumentViewerProps {
   docId: string;
+  version?: string;
 }
 
-export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
+export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId, version }) => {
   const { user, apiRequest } = useAuth();
   const { showToast } = useNotification();
   
@@ -35,12 +36,37 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
         return;
       }
 
-      setDoc(match);
+      let activeDocState: any = match;
+      if (version) {
+        const verMatch = match.versions?.find((v: any) => v.version === version);
+        if (verMatch) {
+          activeDocState = {
+            ...match,
+            name: verMatch.name,
+            classification: verMatch.classification,
+            version: verMatch.version,
+            category: verMatch.category,
+            tags: verMatch.tags,
+            department: verMatch.department,
+            content: verMatch.content,
+            ciphertext: verMatch.ciphertext,
+            wrapped_key: verMatch.wrapped_key,
+            signature: verMatch.signature,
+            author: verMatch.author,
+            modified_time: new Date(verMatch.timestamp).getTime() || match.modified_time
+          };
+        }
+      }
+
+      setDoc(activeDocState);
 
       // Perform Decryption and Envelope Verification if Restricted / Confidential / Secret
-      if (match.classification !== 'PUBLIC') {
+      if (activeDocState.classification !== 'PUBLIC') {
         try {
-          const decryptResult = await apiRequest(`/documents/${docId}/decrypt`, { method: 'POST' });
+          const decryptUrl = version 
+            ? `/documents/${docId}/decrypt?version=${version}` 
+            : `/documents/${docId}/decrypt`;
+          const decryptResult = await apiRequest(decryptUrl, { method: 'POST' });
           setDecryptedContent(decryptResult.content);
           setVerified(decryptResult.verified);
           setChecksum(decryptResult.checksum || '');
@@ -49,7 +75,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
           setErrorMsg(err.message || 'Access Denied: You do not have permissions to decrypt this secure record.');
         }
       } else {
-        setDecryptedContent(match.content);
+        setDecryptedContent(activeDocState.content);
         setVerified(true);
       }
     } catch (e: any) {
@@ -58,7 +84,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
     } finally {
       setLoading(false);
     }
-  }, [docId, apiRequest]);
+  }, [docId, version, apiRequest]);
 
   useEffect(() => {
     loadDocument();
@@ -67,7 +93,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ docId }) => {
   const handleDownload = async () => {
     if (!doc) return;
     try {
-      const response = await apiRequest(`/documents/${doc.id}/download`);
+      const downloadUrl = version 
+        ? `/documents/${doc.id}/download?version=${version}` 
+        : `/documents/${doc.id}/download`;
+      const response = await apiRequest(downloadUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

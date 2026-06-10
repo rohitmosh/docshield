@@ -4,9 +4,15 @@ import { decryptDocument, sha256 } from '../utils/cryptoUtils';
 import { AuditLog } from '../models/AuditLog';
 
 export class CryptoService {
-  static verifyAndDecrypt(docId: string, user: any, ip: string) {
-    const file = FileRepository.findById(docId);
-    if (!file) throw new Error('File not found');
+  static verifyAndDecrypt(docId: string, user: any, ip: string, version?: string) {
+    let file: any;
+    if (version) {
+      file = FileRepository.findVersion(docId, version);
+      if (!file) throw new Error('Historical version not found');
+    } else {
+      file = FileRepository.findById(docId);
+      if (!file) throw new Error('File not found');
+    }
 
     if (file.classification === 'PUBLIC') {
       return {
@@ -36,7 +42,7 @@ export class CryptoService {
         user: user.email || user.name,
         role: user.role,
         action: 'Verify Cryptographic Envelope',
-        resource: file.name,
+        resource: version ? `${file.name} (version ${version})` : file.name,
         status: 'Success',
         ip_address: ip
       };
@@ -57,7 +63,7 @@ export class CryptoService {
         user: user.email || user.name,
         role: user.role,
         action: 'Verify Cryptographic Envelope',
-        resource: file.name,
+        resource: version ? `${file.name} (version ${version})` : file.name,
         status: 'Failure: Decrypt Refused',
         ip_address: ip
       };

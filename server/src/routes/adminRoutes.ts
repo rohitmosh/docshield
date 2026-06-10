@@ -15,4 +15,9 @@ router.post('/webhook', AdminController.saveWebhook);
 router.post('/webhook/test', AdminController.testWebhook);
 router.put('/users/:id', AdminController.updateUser);
 
+router.get('/tags', AdminController.getTags);
+router.post('/tags', AdminController.createTag);
+router.get('/departments', AdminController.getDepartments);
+router.post('/departments', AdminController.createDepartment);
+
 export default router;

@@ -23,22 +23,39 @@ export const Repository: React.FC = () => {
     title: '',
     category: 'Technical',
     department: 'Generation',
-    classification: 'PUBLIC' as 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET',
-    tags: '',
+    classification: 'PUBLIC' as 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL',
+    tags: [] as string[],
     retention: 5,
-    desc: ''
+    desc: '',
+    author: ''
   });
 
   const [showEditMetaModal, setShowEditMetaModal] = useState(false);
   const [editMeta, setEditMeta] = useState({
     id: '',
     name: '',
-    classification: 'PUBLIC' as 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET',
+    classification: 'PUBLIC' as 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL',
     category: 'Technical',
-    tags: '',
+    tags: [] as string[],
     retention: 5,
+    author: '',
     changeReason: ''
   });
+
+  const [expandedFileIds, setExpandedFileIds] = useState<Set<string>>(new Set());
+  const toggleFileExpanded = (id: string) => {
+    setExpandedFileIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+  const [availableTags, setAvailableTags] = useState<any[]>([]);
+  const [availableDepts, setAvailableDepts] = useState<any[]>([]);
 
   const [showPermModal, setShowPermModal] = useState(false);
   const [permResource, setPermResource] = useState<{ id: string; name: string; type: 'folder' | 'file'; allowedDepts: string[] } | null>(null);
@@ -243,6 +260,22 @@ export const Repository: React.FC = () => {
     loadBreadcrumbs();
   }, [loadBreadcrumbs]);
 
+  useEffect(() => {
+    const fetchMetaOptions = async () => {
+      try {
+        const tagsData = await apiRequest('/admin/tags');
+        setAvailableTags(tagsData || []);
+        const deptsData = await apiRequest('/admin/departments');
+        setAvailableDepts(deptsData || []);
+      } catch (e) {
+        console.error('Error fetching tags/departments options:', e);
+      }
+    };
+    if (user.role === 'SYSTEM_ADMIN') {
+      fetchMetaOptions();
+    }
+  }, [user, apiRequest]);
+
   // Individual locks/unlocks checkout triggers
   const handleToggleLock = async (docId: string) => {
     try {
@@ -298,10 +331,16 @@ export const Repository: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArr = Array.from(e.target.files);
       setUploadFileQueue(filesArr);
-      setUploadMeta(prev => ({
-        ...prev,
-        title: filesArr[0].name.replace(/\.[^/.]+$/, "")
-      }));
+      setUploadMeta({
+        title: filesArr[0].name.replace(/\.[^/.]+$/, ""),
+        category: 'Technical',
+        department: 'Generation',
+        classification: 'PUBLIC',
+        tags: [],
+        retention: 5,
+        desc: '',
+        author: user.name
+      });
       setShowUploadModal(true);
     }
   };
@@ -313,7 +352,6 @@ export const Repository: React.FC = () => {
 
     try {
       const fileObj = uploadFileQueue[0];
-      const tagsArr = uploadMeta.tags ? uploadMeta.tags.split(',').map(t => t.trim()) : [];
       
       await apiRequest('/documents/upload', {
         method: 'POST',
@@ -323,10 +361,11 @@ export const Repository: React.FC = () => {
           category: uploadMeta.category,
           department: uploadMeta.department,
           classification: uploadMeta.classification,
-          tags: tagsArr,
+          tags: uploadMeta.tags,
           retention: uploadMeta.retention,
           desc: uploadMeta.desc,
-          parentId: currentFolderId
+          parentId: currentFolderId,
+          author: uploadMeta.author
         })
       });
 
@@ -350,10 +389,11 @@ export const Repository: React.FC = () => {
     setEditMeta({
       id: doc.id,
       name: doc.name,
-      classification: doc.classification,
+      classification: doc.classification as any,
       category: doc.category,
-      tags: doc.tags.join(', '),
+      tags: doc.tags || [],
       retention: doc.retention_years,
+      author: doc.author || '',
       changeReason: ''
     });
     setShowEditMetaModal(true);
@@ -369,13 +409,14 @@ export const Repository: React.FC = () => {
           name: editMeta.name,
           classification: editMeta.classification,
           category: editMeta.category,
-          tags: editMeta.tags.split(',').map(t => t.trim()),
+          tags: editMeta.tags,
           retention: editMeta.retention,
+          author: editMeta.author,
           changeReason: editMeta.changeReason
         })
       });
 
-      showToast(`${editMeta.name} metadata revision revision version saved.`, 'success');
+      showToast(`${editMeta.name} metadata revision version saved.`, 'success');
       setShowEditMetaModal(false);
       loadVault();
     } catch (e: any) {
@@ -734,19 +775,20 @@ export const Repository: React.FC = () => {
                     <th style={{ width: '40px' }}>
                       <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} />
                     </th>
-                    <th>Name</th>
-                    <th>Classification</th>
-                    <th>Department</th>
-                    <th>Status</th>
-                    <th>Checked Out By</th>
-                    <th>Last Modified</th>
+                    <th>Doc Title</th>
+                    <th>Doc ID</th>
+                    <th>Doc Version</th>
+                    <th>Doc Classification</th>
+                    <th>Author</th>
+                    <th>Date of Approval</th>
+                    <th>Date of Release</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="repo-files-table-body">
                   {files.length === 0 && folders.length === 0 ? (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                      <td colSpan={9} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                         <p style={{ fontWeight: 600 }}>This vault directory is empty</p>
                       </td>
                     </tr>
@@ -757,65 +799,110 @@ export const Repository: React.FC = () => {
                       const isLockedByMe = isLocked && doc.locked_by === user.name;
                       const canEdit = user.role === 'SYSTEM_ADMIN' || user.can_edit === 1;
                       const showEdit = canEdit && (!isLocked || isLockedByMe);
+                      const isExpanded = expandedFileIds.has(doc.id);
+                      const previousVersions = doc.versions ? doc.versions.filter(v => v.version !== doc.version) : [];
+                      const showToggle = previousVersions.length > 0 && user.role === 'SYSTEM_ADMIN';
 
                       return (
-                        <tr key={doc.id}>
-                          <td>
-                            <input 
-                              type="checkbox" 
-                              checked={isSelected} 
-                              onChange={e => handleSelectFile(doc.id, e.target.checked)}
-                            />
-                          </td>
-                          <td>
-                            <div className="doc-name-cell" style={{ display: 'flex', alignItems: 'center' }}>
-                              {getFileIcon(doc.type)}
-                              <a href={`#document-viewer?id=${doc.id}`} style={{ fontWeight: 600, color: 'var(--navy)', textDecoration: 'none' }}>{doc.name}</a>
-                            </div>
-                          </td>
-                          <td><span className={`badge-classification ${doc.classification.toLowerCase()}`}>{doc.classification}</span></td>
-                          <td><span style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--text-muted)' }}>{doc.department}</span></td>
-                          <td><span className={`badge-status ${doc.status}`}>{doc.status}</span></td>
-                          <td><span style={{ fontSize: '0.8rem', fontWeight: 500 }}>{doc.locked_by || '-'}</span></td>
-                          <td>{new Date(doc.modified_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
-                              {doc.classification !== 'PUBLIC' && (
-                                <button onClick={() => handleInspectSecurity(doc.id)} className="btn-icon" title="Inspect Security Wrapper" style={{ color: 'var(--accent-blue)' }}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                                </button>
-                              )}
-                              
-                              {canEdit && (
-                                <button onClick={() => handleToggleLock(doc.id)} className="btn-icon" title={isLocked ? 'Unlock File' : 'Lock/Checkout'}>
-                                  {isLocked ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-                                  ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>
-                                  )}
-                                </button>
-                              )}
+                        <React.Fragment key={doc.id}>
+                          <tr>
+                            <td>
+                              <input 
+                                type="checkbox" 
+                                checked={isSelected} 
+                                onChange={e => handleSelectFile(doc.id, e.target.checked)}
+                              />
+                            </td>
+                            <td>
+                              <div className="doc-name-cell" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {showToggle && (
+                                  <button 
+                                    type="button" 
+                                    onClick={() => toggleFileExpanded(doc.id)} 
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2px', color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none' }}
+                                  >
+                                    {isExpanded ? (
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+                                    ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                    )}
+                                  </button>
+                                )}
+                                {getFileIcon(doc.type)}
+                                <a href={`#document-viewer?id=${doc.id}`} style={{ fontWeight: 600, color: 'var(--navy)', textDecoration: 'none' }}>{doc.name}</a>
+                              </div>
+                            </td>
+                            <td><code style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{doc.id}</code></td>
+                            <td><span style={{ background: 'rgba(8, 59, 138, 0.08)', padding: '0.15rem 0.5rem', borderRadius: '6px', fontWeight: 700, color: 'var(--primary-blue)', fontSize: '0.8rem' }}>{doc.version}</span></td>
+                            <td><span className={`badge-classification ${doc.classification.toLowerCase()}`}>{doc.classification}</span></td>
+                            <td><span>{doc.author}</span></td>
+                            <td>{new Date(doc.modified_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                            <td>{new Date(doc.created_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                            <td>
+                              <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+                                {doc.classification !== 'PUBLIC' && (
+                                  <button onClick={() => handleInspectSecurity(doc.id)} className="btn-icon" title="Inspect Security Wrapper" style={{ color: 'var(--accent-blue)' }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                                  </button>
+                                )}
+                                
+                                {canEdit && (
+                                  <button onClick={() => handleToggleLock(doc.id)} className="btn-icon" title={isLocked ? 'Unlock File' : 'Lock/Checkout'}>
+                                    {isLocked ? (
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--error)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+                                    ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" /></svg>
+                                    )}
+                                  </button>
+                                )}
 
-                              {canManagePerms && (
-                                <button onClick={() => openPermissions(doc, 'file')} className="btn-icon" title="Manage Permissions">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                                </button>
-                              )}
+                                {canManagePerms && (
+                                  <button onClick={() => openPermissions(doc, 'file')} className="btn-icon" title="Manage Permissions">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                                  </button>
+                                )}
 
-                              {showEdit && (
-                                <button onClick={() => openEditMeta(doc)} className="btn-icon" title="Edit Metadata">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                                </button>
-                              )}
+                                {showEdit && (
+                                  <button onClick={() => openEditMeta(doc)} className="btn-icon" title="Edit Metadata">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                  </button>
+                                )}
 
-                              {showEdit && (
-                                <button onClick={() => handleDeleteFile(doc.id, doc.name)} className="btn-icon" title="Delete" style={{ color: 'var(--error)' }}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
+                                {showEdit && (
+                                  <button onClick={() => handleDeleteFile(doc.id, doc.name)} className="btn-icon" title="Delete" style={{ color: 'var(--error)' }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+
+                          {/* Collapsible previous versions rows */}
+                          {isExpanded && previousVersions.map(ver => (
+                            <tr key={doc.id + '-' + ver.version} style={{ background: 'rgba(0, 0, 0, 0.02)' }}>
+                              <td></td>
+                              <td style={{ paddingLeft: '2.5rem' }}>
+                                <span style={{ color: 'var(--text-muted)', marginRight: '0.5rem', fontWeight: 700 }}>└─</span>
+                                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{ver.name}</span>
+                              </td>
+                              <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{doc.id}</td>
+                              <td><span style={{ background: 'var(--border-color)', padding: '0.15rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>{ver.version}</span></td>
+                              <td><span className={`badge-classification ${ver.classification.toLowerCase()}`}>{ver.classification}</span></td>
+                              <td><span style={{ fontSize: '0.85rem' }}>{ver.author}</span></td>
+                              <td><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{ver.timestamp}</span></td>
+                              <td><span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{new Date(doc.created_time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span></td>
+                              <td>
+                                <a 
+                                  href={`#document-viewer?id=${doc.id}&version=${ver.version}`} 
+                                  className="btn-text-action" 
+                                  style={{ fontSize: '0.8rem' }}
+                                >
+                                  View Version
+                                </a>
+                              </td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
                       );
                     })
                   )}
@@ -873,12 +960,15 @@ export const Repository: React.FC = () => {
               <input type="text" className="form-input" value={uploadMeta.title} onChange={e => setUploadMeta(p => ({ ...p, title: e.target.value }))} required />
             </div>
             <div className="form-group">
+              <label className="form-label">Author</label>
+              <input type="text" className="form-input" value={uploadMeta.author} onChange={e => setUploadMeta(p => ({ ...p, author: e.target.value }))} placeholder="Author (admin writes this)" required />
+            </div>
+            <div className="form-group">
               <label className="form-label">Classification</label>
               <select className="form-input" value={uploadMeta.classification} onChange={e => setUploadMeta(p => ({ ...p, classification: e.target.value as any }))}>
                 <option value="PUBLIC">PUBLIC</option>
-                <option value="RESTRICTED">RESTRICTED</option>
+                <option value="INTERNAL">INTERNAL</option>
                 <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-                <option value="SECRET">SECRET</option>
               </select>
             </div>
             <div className="form-group">
@@ -894,17 +984,35 @@ export const Repository: React.FC = () => {
             <div className="form-group">
               <label className="form-label">Department Owner</label>
               <select className="form-input" value={uploadMeta.department} onChange={e => setUploadMeta(p => ({ ...p, department: e.target.value }))}>
-                <option value="Generation">Generation</option>
-                <option value="Transmission">Transmission</option>
-                <option value="Finance">Finance</option>
-                <option value="HR">Human Resources</option>
-                <option value="IT">IT Infrastructure</option>
-                <option value="Legal">Legal & Contracts</option>
+                {availableDepts.map(d => (
+                  <option key={d.id} value={d.name}>{d.name}</option>
+                ))}
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Tags (comma separated)</label>
-              <input type="text" className="form-input" value={uploadMeta.tags} onChange={e => setUploadMeta(p => ({ ...p, tags: e.target.value }))} placeholder="turbine, overhaul, balimela" />
+              <label className="form-label">Classification Tags</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', maxHeight: '130px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.5rem', background: 'var(--bg-slate)' }}>
+                {availableTags.map(t => {
+                  const isChecked = uploadMeta.tags.includes(t.name);
+                  return (
+                    <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 500 }}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={e => {
+                          const checked = e.target.checked;
+                          setUploadMeta(p => {
+                            const nextTags = checked ? [...p.tags, t.name] : p.tags.filter(tg => tg !== t.name);
+                            return { ...p, tags: nextTags };
+                          });
+                        }}
+                        style={{ width: '15px', height: '15px' }}
+                      />
+                      <span>#{t.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Retention Schedule (Years)</label>
@@ -942,12 +1050,15 @@ export const Repository: React.FC = () => {
               <input type="text" className="form-input" value={editMeta.name} onChange={e => setEditMeta(p => ({ ...p, name: e.target.value }))} required />
             </div>
             <div className="form-group">
+              <label className="form-label">Author</label>
+              <input type="text" className="form-input" value={editMeta.author} onChange={e => setEditMeta(p => ({ ...p, author: e.target.value }))} placeholder="Author (admin writes this)" required />
+            </div>
+            <div className="form-group">
               <label className="form-label">Classification</label>
               <select className="form-input" value={editMeta.classification} onChange={e => setEditMeta(p => ({ ...p, classification: e.target.value as any }))}>
                 <option value="PUBLIC">PUBLIC</option>
-                <option value="RESTRICTED">RESTRICTED</option>
+                <option value="INTERNAL">INTERNAL</option>
                 <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-                <option value="SECRET">SECRET</option>
               </select>
             </div>
             <div className="form-group">
@@ -961,8 +1072,29 @@ export const Repository: React.FC = () => {
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Tags (comma separated)</label>
-              <input type="text" className="form-input" value={editMeta.tags} onChange={e => setEditMeta(p => ({ ...p, tags: e.target.value }))} />
+              <label className="form-label">Classification Tags</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', maxHeight: '130px', overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.5rem', background: 'var(--bg-slate)' }}>
+                {availableTags.map(t => {
+                  const isChecked = editMeta.tags.includes(t.name);
+                  return (
+                    <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 500 }}>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={e => {
+                          const checked = e.target.checked;
+                          setEditMeta(p => {
+                            const nextTags = checked ? [...p.tags, t.name] : p.tags.filter(tg => tg !== t.name);
+                            return { ...p, tags: nextTags };
+                          });
+                        }}
+                        style={{ width: '15px', height: '15px' }}
+                      />
+                      <span>#{t.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Retention Schedule (Years)</label>
@@ -1000,22 +1132,15 @@ export const Repository: React.FC = () => {
             </div>
             <div className="form-group">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {[
-                  { key: 'Generation', name: 'Generation' },
-                  { key: 'Transmission', name: 'Transmission' },
-                  { key: 'Finance', name: 'Finance & Accounts' },
-                  { key: 'HR', name: 'Human Resources' },
-                  { key: 'IT', name: 'IT Infrastructure' },
-                  { key: 'Legal', name: 'Legal & Contracts' }
-                ].map(d => {
-                  const isChecked = permResource.allowedDepts.includes(d.key);
+                {availableDepts.map(d => {
+                  const isChecked = permResource.allowedDepts.includes(d.name);
                   return (
-                    <label key={d.key} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500, cursor: 'pointer' }}>
+                    <label key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500, cursor: 'pointer' }}>
                       <input 
                         type="checkbox" 
-                        value={d.key} 
+                        value={d.name} 
                         checked={isChecked} 
-                        onChange={e => handlePermCheckboxChange(d.key, e.target.checked)}
+                        onChange={e => handlePermCheckboxChange(d.name, e.target.checked)}
                       />
                       <span>{d.name}</span>
                     </label>

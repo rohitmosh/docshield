@@ -5,10 +5,18 @@ const FileRepository_1 = require("../repositories/FileRepository");
 const AuditRepository_1 = require("../repositories/AuditRepository");
 const cryptoUtils_1 = require("../utils/cryptoUtils");
 class CryptoService {
-    static verifyAndDecrypt(docId, user, ip) {
-        const file = FileRepository_1.FileRepository.findById(docId);
-        if (!file)
-            throw new Error('File not found');
+    static verifyAndDecrypt(docId, user, ip, version) {
+        let file;
+        if (version) {
+            file = FileRepository_1.FileRepository.findVersion(docId, version);
+            if (!file)
+                throw new Error('Historical version not found');
+        }
+        else {
+            file = FileRepository_1.FileRepository.findById(docId);
+            if (!file)
+                throw new Error('File not found');
+        }
         if (file.classification === 'PUBLIC') {
             return {
                 verified: true,
@@ -34,7 +42,7 @@ class CryptoService {
                 user: user.email || user.name,
                 role: user.role,
                 action: 'Verify Cryptographic Envelope',
-                resource: file.name,
+                resource: version ? `${file.name} (version ${version})` : file.name,
                 status: 'Success',
                 ip_address: ip
             };
@@ -55,7 +63,7 @@ class CryptoService {
                 user: user.email || user.name,
                 role: user.role,
                 action: 'Verify Cryptographic Envelope',
-                resource: file.name,
+                resource: version ? `${file.name} (version ${version})` : file.name,
                 status: 'Failure: Decrypt Refused',
                 ip_address: ip
             };

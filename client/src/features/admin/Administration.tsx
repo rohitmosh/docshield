@@ -17,6 +17,10 @@ export const Administration: React.FC = () => {
 
   const [profiles, setProfiles] = useState<any[]>([]);
   const [pendingDocs, setPendingDocs] = useState<File[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [newTagName, setNewTagName] = useState('');
+  const [newDeptName, setNewDeptName] = useState('');
   const [loading, setLoading] = useState(true);
 
   const isSystemAdmin = user.role === 'SYSTEM_ADMIN';
@@ -47,6 +51,12 @@ export const Administration: React.FC = () => {
       if (isSystemAdmin) {
         const profilesData = await apiRequest('/auth/profiles');
         setProfiles(profilesData.filter((u: any) => u.role === 'OFFICIAL'));
+
+        // Load tags and departments
+        const tagsData = await apiRequest('/admin/tags');
+        setTags(tagsData || []);
+        const deptsData = await apiRequest('/admin/departments');
+        setDepartments(deptsData || []);
       }
 
     } catch (e: any) {
@@ -95,6 +105,40 @@ export const Administration: React.FC = () => {
       loadAdminData();
     } catch (e: any) {
       showToast(e.message || 'Failed to update privileges.', 'error');
+    }
+  };
+
+  const handleAddTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTagName.trim()) return;
+    try {
+      await apiRequest('/admin/tags', {
+        method: 'POST',
+        body: JSON.stringify({ name: newTagName.trim() })
+      });
+      showToast(`Tag "${newTagName}" added successfully.`, 'success');
+      setNewTagName('');
+      const tagsData = await apiRequest('/admin/tags');
+      setTags(tagsData || []);
+    } catch (e: any) {
+      showToast(e.message || 'Failed to add tag.', 'error');
+    }
+  };
+
+  const handleAddDept = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDeptName.trim()) return;
+    try {
+      await apiRequest('/admin/departments', {
+        method: 'POST',
+        body: JSON.stringify({ name: newDeptName.trim() })
+      });
+      showToast(`Department "${newDeptName}" added successfully.`, 'success');
+      setNewDeptName('');
+      const deptsData = await apiRequest('/admin/departments');
+      setDepartments(deptsData || []);
+    } catch (e: any) {
+      showToast(e.message || 'Failed to add department.', 'error');
     }
   };
 
@@ -245,12 +289,9 @@ export const Administration: React.FC = () => {
                             setProfiles(prev => prev.map(p => p.id === prof.id ? { ...p, dept: val } : p));
                           }}
                         >
-                          <option value="Generation">Generation</option>
-                          <option value="Transmission">Transmission</option>
-                          <option value="Finance">Finance</option>
-                          <option value="HR">HR</option>
-                          <option value="IT">IT</option>
-                          <option value="Legal">Legal</option>
+                          {departments.map(d => (
+                            <option key={d.id} value={d.name}>{d.name}</option>
+                          ))}
                         </select>
                       </td>
                       <td>
@@ -300,6 +341,75 @@ export const Administration: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* Side-by-side panels for Tags & Departments */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            {/* Manage Tags */}
+            <div className="section-card">
+              <h4 className="section-title" style={{ marginBottom: '0.25rem' }}>Manage Classification Tags</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                Add new custom metadata tags for classification.
+              </p>
+              <form onSubmit={handleAddTag} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <input
+                  type="text"
+                  className="search-input"
+                  style={{ padding: '0.5rem', borderRadius: '8px', fontSize: '0.85rem', flexGrow: 1 }}
+                  value={newTagName}
+                  onChange={e => setNewTagName(e.target.value)}
+                  placeholder="New tag name (e.g. balimela-2026)..."
+                  required
+                />
+                <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>
+                  Add Tag
+                </button>
+              </form>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', maxHeight: '150px', overflowY: 'auto', padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                {tags.length === 0 ? (
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>No tags found.</span>
+                ) : (
+                  tags.map(t => (
+                    <span key={t.id} style={{ display: 'inline-block', background: 'var(--bg-slate)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.2rem 0.5rem', fontSize: '0.8rem', fontWeight: 500 }}>
+                      #{t.name}
+                    </span>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Manage Departments */}
+            <div className="section-card">
+              <h4 className="section-title" style={{ marginBottom: '0.25rem' }}>Manage Corporate Departments</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                Add new corporate departments to assign document owners/clearances.
+              </p>
+              <form onSubmit={handleAddDept} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <input
+                  type="text"
+                  className="search-input"
+                  style={{ padding: '0.5rem', borderRadius: '8px', fontSize: '0.85rem', flexGrow: 1 }}
+                  value={newDeptName}
+                  onChange={e => setNewDeptName(e.target.value)}
+                  placeholder="New department name (e.g. Safety)..."
+                  required
+                />
+                <button type="submit" className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>
+                  Add Dept
+                </button>
+              </form>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', maxHeight: '150px', overflowY: 'auto', padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                {departments.length === 0 ? (
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>No departments found.</span>
+                ) : (
+                  departments.map(d => (
+                    <span key={d.id} style={{ display: 'inline-block', background: 'var(--bg-slate)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.2rem 0.5rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--navy)' }}>
+                      {d.name}
+                    </span>
+                  ))
+                )}
+              </div>
             </div>
           </div>
 

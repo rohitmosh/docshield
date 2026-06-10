@@ -3,6 +3,17 @@ export interface FileVersion {
   author: string;
   timestamp: string;
   change_reason: string;
+  name: string;
+  type: string;
+  size: number;
+  category: string;
+  classification: 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL';
+  tags: string[];
+  department: string;
+  content: string;
+  ciphertext?: string;
+  wrapped_key?: string;
+  signature?: string;
 }
 
 export interface File {
@@ -12,7 +23,7 @@ export interface File {
   size: number;
   category: string;
   department: string;
-  classification: 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET';
+  classification: 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL';
   tags: string[];
   version: string;
   status: 'published' | 'pending' | 'draft';

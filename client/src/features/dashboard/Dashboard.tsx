@@ -8,13 +8,12 @@ export const Dashboard: React.FC = () => {
     total: 0,
     encrypted: 0,
     pending: 0,
-    secret: 0
+    confidential: 0
   });
   const [classifications, setClassifications] = useState({
     PUBLIC: 0,
-    RESTRICTED: 0,
-    CONFIDENTIAL: 0,
-    SECRET: 0
+    INTERNAL: 0,
+    CONFIDENTIAL: 0
   });
   const [deptDistribution, setDeptDistribution] = useState<Record<string, number>>({});
   const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
@@ -30,12 +29,12 @@ export const Dashboard: React.FC = () => {
         const total = files.length;
         const encrypted = files.filter(f => f.classification !== 'PUBLIC').length;
         const pending = files.filter(f => f.status === 'pending').length;
-        const secret = files.filter(f => f.classification === 'SECRET').length;
+        const confidential = files.filter(f => f.classification === 'CONFIDENTIAL').length;
 
-        setStats({ total, encrypted, pending, secret });
+        setStats({ total, encrypted, pending, confidential });
 
         // Chart 1: Classification chart counts
-        const classes = { PUBLIC: 0, RESTRICTED: 0, CONFIDENTIAL: 0, SECRET: 0 };
+        const classes = { PUBLIC: 0, INTERNAL: 0, CONFIDENTIAL: 0 };
         files.forEach(f => {
           if (f.classification in classes) {
             classes[f.classification as keyof typeof classes]++;
@@ -109,8 +108,8 @@ export const Dashboard: React.FC = () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
           </div>
           <div className="stat-info">
-            <h3 id="dash-stat-secret-files">{stats.secret}</h3>
-            <p>SECRET Drawings</p>
+            <h3 id="dash-stat-confidential-files">{stats.confidential}</h3>
+            <p>CONFIDENTIAL Files</p>
           </div>
         </div>
       </div>
@@ -125,8 +124,7 @@ export const Dashboard: React.FC = () => {
             {Object.entries(classifications).map(([label, val]) => {
               const heightPercent = Math.max((val / maxClassVal) * 80, 5);
               const color = label === 'PUBLIC' ? 'var(--color-public)' :
-                            label === 'RESTRICTED' ? 'var(--color-restricted)' :
-                            label === 'CONFIDENTIAL' ? 'var(--color-confidential)' : 'var(--color-secret)';
+                            label === 'INTERNAL' ? 'var(--color-internal)' : 'var(--color-confidential)';
               return (
                 <div key={label} className="bar-item" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '60px', height: '100%', justifyContent: 'flex-end' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '0.25rem' }}>{val}</span>

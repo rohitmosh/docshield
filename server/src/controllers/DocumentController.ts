@@ -53,7 +53,7 @@ export class DocumentController {
 
   static uploadFile(req: Request, res: Response): void {
     try {
-      const { name, size, category, department, classification, tags, retention, desc, parentId } = req.body;
+      const { name, size, category, department, classification, tags, retention, desc, parentId, author } = req.body;
       const user = (req as any).user;
       const ip = req.ip || '127.0.0.1';
 
@@ -72,6 +72,7 @@ export class DocumentController {
         parseInt(retention || '5', 10),
         desc || '',
         parentId,
+        author || user.name,
         user,
         ip
       );
@@ -85,7 +86,7 @@ export class DocumentController {
   static updateMetadata(req: Request, res: Response): void {
     try {
       const { id } = req.params;
-      const { name, classification, category, tags, retention, changeReason } = req.body;
+      const { name, classification, category, tags, retention, author, changeReason } = req.body;
       const user = (req as any).user;
       const ip = req.ip || '127.0.0.1';
 
@@ -96,7 +97,8 @@ export class DocumentController {
         category,
         tags || [],
         parseInt(retention || '5', 10),
-        changeReason,
+        author || user.name,
+        changeReason || '',
         user,
         ip
       );
@@ -136,10 +138,11 @@ export class DocumentController {
   static decryptFile(req: Request, res: Response): void {
     try {
       const { id } = req.params;
+      const version = req.query.version as string;
       const user = (req as any).user;
       const ip = req.ip || '127.0.0.1';
 
-      const decrypted = CryptoService.verifyAndDecrypt(id, user, ip);
+      const decrypted = CryptoService.verifyAndDecrypt(id, user, ip, version);
       res.status(200).json(decrypted);
     } catch (e: any) {
       res.status(500).json({ error: e.message });
@@ -163,12 +166,22 @@ export class DocumentController {
   static downloadFile(req: Request, res: Response): void {
     try {
       const { id } = req.params;
+      const version = req.query.version as string;
       const user = (req as any).user;
 
-      const file = FileRepository.findById(id);
-      if (!file) {
-        res.status(404).json({ error: 'Document not found' });
-        return;
+      let file: any;
+      if (version) {
+        file = FileRepository.findVersion(id, version);
+        if (!file) {
+          res.status(404).json({ error: 'Historical version not found' });
+          return;
+        }
+      } else {
+        file = FileRepository.findById(id);
+        if (!file) {
+          res.status(404).json({ error: 'Document not found' });
+          return;
+        }
       }
 
       // Check access permissions

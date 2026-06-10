@@ -64,14 +64,19 @@ export class DocumentService {
     size: number,
     category: string,
     department: string,
-    classification: 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET',
+    classification: 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL',
     tags: string[],
     retention: number,
     desc: string,
     parentId: string,
+    author: string,
     user: any,
     ip: string
   ): File {
+    if (user.role !== 'SYSTEM_ADMIN') {
+      throw new Error('Access Denied: Only administrators can upload documents.');
+    }
+
     const docId = 'doc-' + Math.random().toString(36).substring(2, 11);
     const fileType = name.split('.').pop()?.toUpperCase() || 'PDF';
 
@@ -98,7 +103,7 @@ export class DocumentService {
 
     // 2. Encryption if not public
     if (classification !== 'PUBLIC') {
-      const cryptoEnvelope = encryptDocument(content, user.name);
+      const cryptoEnvelope = encryptDocument(content, author || user.name);
       ciphertext = cryptoEnvelope.ciphertext;
       wrappedKey = cryptoEnvelope.wrappedKey;
       signature = cryptoEnvelope.signature;
@@ -116,12 +121,12 @@ export class DocumentService {
       classification,
       tags,
       version: 'v1.0',
-      status: classification === 'PUBLIC' ? 'published' : 'pending',
+      status: 'published', // Admin uploads: auto-published
       locked_by: null,
       retention_years: retention,
       created_time: Date.now(),
       modified_time: Date.now(),
-      author: user.name,
+      author: author || user.name,
       parent_id: parentId,
       ocr_text: ocrText,
       allowed_depts: allDepts,
@@ -132,9 +137,20 @@ export class DocumentService {
       versions: [
         {
           version: 'v1.0',
-          author: user.name,
+          author: author || user.name,
           timestamp: this.formatDate(new Date()),
-          change_reason: 'Initial upload block initialization'
+          change_reason: 'Initial upload block initialization',
+          name,
+          type: fileType,
+          size,
+          category,
+          classification,
+          tags,
+          department,
+          content,
+          ciphertext,
+          wrapped_key: wrappedKey,
+          signature
         }
       ]
     };
@@ -154,9 +170,7 @@ export class DocumentService {
     };
     AuditRepository.create(log);
 
-    if (newDoc.status === 'published') {
-      triggerWebhook('document.published', { name: newDoc.name, id: newDoc.id });
-    }
+    triggerWebhook('document.published', { name: newDoc.name, id: newDoc.id });
 
     return newDoc;
   }
@@ -164,18 +178,23 @@ export class DocumentService {
   static updateMetadata(
     id: string,
     name: string,
-    classification: 'PUBLIC' | 'RESTRICTED' | 'CONFIDENTIAL' | 'SECRET',
+    classification: 'PUBLIC' | 'INTERNAL' | 'CONFIDENTIAL',
     category: string,
     tags: string[],
     retention: number,
+    author: string,
     changeReason: string,
     user: any,
     ip: string
   ): File {
+    if (user.role !== 'SYSTEM_ADMIN') {
+      throw new Error('Access Denied: Only administrators can edit document metadata.');
+    }
+
     const file = FileRepository.findById(id);
     if (!file) throw new Error('File not found');
 
-    if (file.locked_by && file.locked_by !== user.name && user.role !== 'SYSTEM_ADMIN') {
+    if (file.locked_by && file.locked_by !== user.name) {
       throw new Error('File is checked out by another editor');
     }
 
@@ -192,12 +211,13 @@ export class DocumentService {
     file.category = category;
     file.tags = tags;
     file.retention_years = retention;
+    file.author = author || file.author;
     file.version = nextVer;
     file.modified_time = Date.now();
 
     // Re-encrypt if encryption is enabled and classification isn't public
     if (classification !== 'PUBLIC') {
-      const cryptoEnvelope = encryptDocument(file.content, user.name);
+      const cryptoEnvelope = encryptDocument(file.content, file.author);
       file.ciphertext = cryptoEnvelope.ciphertext;
       file.wrapped_key = cryptoEnvelope.wrappedKey;
       file.signature = cryptoEnvelope.signature;
@@ -209,11 +229,23 @@ export class DocumentService {
 
     FileRepository.updateMetadata(file);
 
+    // Save full snapshots to version history
     const versionLog: FileVersion = {
       version: nextVer,
-      author: user.name,
+      author: file.author,
       timestamp: this.formatDate(new Date()),
-      change_reason: changeReason || 'Metadata modifications applied'
+      change_reason: changeReason || 'Metadata modifications applied',
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      category: file.category,
+      classification: file.classification,
+      tags: file.tags,
+      department: file.department,
+      content: file.content,
+      ciphertext: file.ciphertext,
+      wrapped_key: file.wrapped_key,
+      signature: file.signature
     };
     FileRepository.addVersion(id, versionLog);
 

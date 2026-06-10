@@ -45,14 +45,14 @@ class DocumentController {
     }
     static uploadFile(req, res) {
         try {
-            const { name, size, category, department, classification, tags, retention, desc, parentId } = req.body;
+            const { name, size, category, department, classification, tags, retention, desc, parentId, author } = req.body;
             const user = req.user;
             const ip = req.ip || '127.0.0.1';
             if (!name || !parentId) {
                 res.status(400).json({ error: 'File name and parent ID are required' });
                 return;
             }
-            const file = DocumentService_1.DocumentService.uploadDocument(name, size || 1000000, category || 'Technical', department || user.dept, classification || 'PUBLIC', tags || [], parseInt(retention || '5', 10), desc || '', parentId, user, ip);
+            const file = DocumentService_1.DocumentService.uploadDocument(name, size || 1000000, category || 'Technical', department || user.dept, classification || 'PUBLIC', tags || [], parseInt(retention || '5', 10), desc || '', parentId, author || user.name, user, ip);
             res.status(201).json(file);
         }
         catch (e) {
@@ -62,10 +62,10 @@ class DocumentController {
     static updateMetadata(req, res) {
         try {
             const { id } = req.params;
-            const { name, classification, category, tags, retention, changeReason } = req.body;
+            const { name, classification, category, tags, retention, author, changeReason } = req.body;
             const user = req.user;
             const ip = req.ip || '127.0.0.1';
-            const file = DocumentService_1.DocumentService.updateMetadata(id, name, classification, category, tags || [], parseInt(retention || '5', 10), changeReason, user, ip);
+            const file = DocumentService_1.DocumentService.updateMetadata(id, name, classification, category, tags || [], parseInt(retention || '5', 10), author || user.name, changeReason || '', user, ip);
             res.status(200).json(file);
         }
         catch (e) {
@@ -99,9 +99,10 @@ class DocumentController {
     static decryptFile(req, res) {
         try {
             const { id } = req.params;
+            const version = req.query.version;
             const user = req.user;
             const ip = req.ip || '127.0.0.1';
-            const decrypted = CryptoService_1.CryptoService.verifyAndDecrypt(id, user, ip);
+            const decrypted = CryptoService_1.CryptoService.verifyAndDecrypt(id, user, ip, version);
             res.status(200).json(decrypted);
         }
         catch (e) {
@@ -124,11 +125,22 @@ class DocumentController {
     static downloadFile(req, res) {
         try {
             const { id } = req.params;
+            const version = req.query.version;
             const user = req.user;
-            const file = FileRepository_1.FileRepository.findById(id);
-            if (!file) {
-                res.status(404).json({ error: 'Document not found' });
-                return;
+            let file;
+            if (version) {
+                file = FileRepository_1.FileRepository.findVersion(id, version);
+                if (!file) {
+                    res.status(404).json({ error: 'Historical version not found' });
+                    return;
+                }
+            }
+            else {
+                file = FileRepository_1.FileRepository.findById(id);
+                if (!file) {
+                    res.status(404).json({ error: 'Document not found' });
+                    return;
+                }
             }
             // Check access permissions
             if (file.classification !== 'PUBLIC' && user.role !== 'SYSTEM_ADMIN' && file.author !== user.name) {

@@ -102,4 +102,52 @@ export class AdminController {
       res.status(500).json({ error: e.message });
     }
   }
+
+  static getTags(req: Request, res: Response): void {
+    try {
+      const rows = db.prepare('SELECT * FROM tags ORDER BY name ASC').all();
+      res.status(200).json(rows);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  }
+
+  static createTag(req: Request, res: Response): void {
+    try {
+      const { name } = req.body;
+      if (!name || !name.trim()) {
+        res.status(400).json({ error: 'Tag name is required' });
+        return;
+      }
+      const stmt = db.prepare('INSERT INTO tags (name) VALUES (?)');
+      stmt.run(name.trim().toLowerCase());
+      res.status(201).json({ success: true, name: name.trim().toLowerCase() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  }
+
+  static getDepartments(req: Request, res: Response): void {
+    try {
+      const rows = db.prepare('SELECT * FROM departments ORDER BY name ASC').all();
+      res.status(200).json(rows);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  }
+
+  static createDepartment(req: Request, res: Response): void {
+    try {
+      const { name } = req.body;
+      if (!name || !name.trim()) {
+        res.status(400).json({ error: 'Department name is required' });
+        return;
+      }
+      const stmt = db.prepare('INSERT INTO departments (name) VALUES (?)');
+      stmt.run(name.trim());
+      res.status(201).json({ success: true, name: name.trim() });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  }
 }
