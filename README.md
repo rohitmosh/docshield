@@ -1,12 +1,62 @@
-# DocShield — Odisha Hydro Power Corporation (OHPC) Document Management System
+# DocShield — (OHPC) Document Management System
 
-DocShield is a secure, enterprise-grade Document Management System (DMS) custom-built for the **Odisha Hydro Power Corporation (OHPC)**. It is designed to securely store, version, and manage critical operational manuals, financial accounts, substation schematics, and public charters.
+DocShield is a secure, enterprise-grade Document Management System (DMS) custom-built for the **OHPC**. It is designed to securely store, version, and manage critical operational manuals, financial accounts, substation schematics, and public charters.
 
 The application leverages a hybrid cryptography architecture to protect sensitive data at rest and in transit, enforces strict role-based access control, and maintains an immutable ledger for auditing operations.
 
 ---
 
+## 📸 Screenshots
+
+Below are the operational views and interfaces of DocShield:
+
+<details>
+  <summary>🔍 Click to Expand Screenshot Gallery</summary>
+
+  ### 🏠 Public Landing & Public Documents
+  * **Landing Portal (Hero View)**:
+    ![Landing Portal](screenshots/Screenshot%202026-06-11%20at%2012.19.38.png)
+  * **Public Records Explorer**:
+    ![Public Records Explorer](screenshots/Screenshot%202026-06-11%20at%2012.19.56.png)
+
+  ### 🔑 Authentication & Login
+  * **Role-Based Access Entry**:
+    ![Login Interface](screenshots/Screenshot%202026-06-11%20at%2012.20.20.png)
+
+  ### 📊 User Dashboards
+  * **System Operations Dashboard (Admin)**:
+    ![System Admin Dashboard](screenshots/Screenshot%202026-06-11%20at%2012.20.41.png)
+  * **Department Dashboard (Official)**:
+    ![Official Scoped Dashboard](screenshots/Screenshot%202026-06-11%20at%2012.21.18.png)
+
+  ### 📂 Secure Vault & Document Repository
+  * **Secure Repository Explorer**:
+    ![Repository Explorer](screenshots/Screenshot%202026-06-11%20at%2012.27.29.png)
+  * **Version History Nested Dropdown**:
+    ![Version History Nested List](screenshots/Screenshot%202026-06-11%20at%2012.27.38.png)
+  * **Document Upload Modal**:
+    ![Upload Modal](screenshots/Screenshot%202026-06-11%20at%2012.27.49.png)
+
+  ### 🛠️ Administrative & Management Consoles
+  * **Admin Panel - User Capability Matrix**:
+    ![User Administration](screenshots/Screenshot%202026-06-11%20at%2012.28.05.png)
+  * **Admin Panel - Tags & Departments Management**:
+    ![Tags and Departments Management](screenshots/Screenshot%202026-06-11%20at%2012.28.15.png)
+
+  ### 🖥️ Cryptographic Security & Inspection
+  * **Decrypted Document View**:
+    ![Decrypted Document Viewer](screenshots/Screenshot%202026-06-11%20at%2012.28.29.png)
+  * **Cryptographic Scrambling Pipeline**:
+    ![Security Pipeline Control](screenshots/Screenshot%202026-06-11%20at%2012.28.37.png)
+  * **Immutable Ledger Compliance Audit Log**:
+    ![Audit Logs Console](screenshots/Screenshot%202026-06-11%20at%2012.28.48.png)
+
+</details>
+
+---
+
 ## 🌟 Core Features
+
 
 ### 🔒 Cryptographic Envelope Protection
 * **Hybrid Encryption**: Symmetric payload encryption using AES-256-CBC with dynamic Initialization Vectors (IVs), paired with asymmetric key wrapping using a generated RSA-4096 key pair.
