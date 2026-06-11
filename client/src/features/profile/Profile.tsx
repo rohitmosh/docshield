@@ -8,9 +8,9 @@ export const Profile: React.FC = () => {
   const permissions = [
     { key: 'browse', name: 'Browse public portal', desc: 'Allows access to search and view public OHPC declarations.', allowed: true },
     { key: 'view', name: 'View secure vaults', desc: 'Allows access to search and view restricted/confidential files in authorized departments.', allowed: user.role !== 'ANONYMOUS' },
-    { key: 'upload', name: 'Upload / Checkout documents', desc: 'Allows adding new documents, creating folders, and checking out documents for editing.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_edit === 1 },
+    { key: 'upload', name: 'Upload / Create folders', desc: 'Allows adding new documents and creating folders.', allowed: user.role === 'SYSTEM_ADMIN' },
     { key: 'edit', name: 'Commit document modifications', desc: 'Allows saving metadata revisions and updates to files checked out by the user.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_edit === 1 },
-    { key: 'workflow', name: 'Approve workflow submissions', desc: 'Allows publishing draft or pending files to make them active.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_approve === 1 },
+    { key: 'version_history', name: 'View version history', desc: 'Allows access to previous document versions and revisions history.', allowed: user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1 },
     { key: 'perms', name: 'Manage files access control', desc: 'Allows setting department-specific access limits on files and folders.', allowed: user.role === 'SYSTEM_ADMIN' },
     { key: 'audit', name: 'Read compliance logs', desc: 'Allows full visibility into system audit ledger operations history.', allowed: user.role === 'SYSTEM_ADMIN' },
     { key: 'admin', name: 'Lifecycle & Webhooks configuration', desc: 'Allows purge management, webhook setup, and API keys updates.', allowed: user.role === 'SYSTEM_ADMIN' }

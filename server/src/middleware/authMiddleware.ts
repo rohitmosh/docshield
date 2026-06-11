@@ -12,7 +12,7 @@ export interface AuthenticatedRequest extends Request {
     avatar: string;
     rank?: string;
     can_edit?: number;
-    can_approve?: number;
+    can_view_history?: number;
   };
 }
 
@@ -29,7 +29,7 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
       avatar: 'PV',
       rank: 'Guest',
       can_edit: 0,
-      can_approve: 0
+      can_view_history: 0
     };
     next();
     return;
@@ -74,15 +74,15 @@ export function requireEdit(req: AuthenticatedRequest, res: Response, next: Next
   }
 }
 
-export function requireApprove(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+export function requireViewHistory(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   if (!req.user) {
     res.status(401).json({ error: 'Authentication required' });
     return;
   }
-  if (req.user.role === 'SYSTEM_ADMIN' || req.user.can_approve === 1) {
+  if (req.user.role === 'SYSTEM_ADMIN' || req.user.can_view_history === 1) {
     next();
   } else {
-    res.status(403).json({ error: 'Access Denied: You do not have approve permissions.' });
+    res.status(403).json({ error: 'Access Denied: You do not have permission to view version history.' });
   }
 }
 

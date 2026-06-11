@@ -24,7 +24,7 @@ export const Administration: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const isSystemAdmin = user.role === 'SYSTEM_ADMIN';
-  const isApprover = user.role === 'SYSTEM_ADMIN' || user.can_approve === 1;
+  const isApprover = user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1;
 
   const loadAdminData = useCallback(async () => {
     setLoading(true);
@@ -90,21 +90,21 @@ export const Administration: React.FC = () => {
     }
   };
 
-  const handleSaveUser = async (id: string, dept: string, rank: string, canEdit: boolean, canApprove: boolean) => {
+  const handleSaveUser = async (id: string, dept: string, rank: string, canEdit: boolean, canViewHistory: boolean) => {
     try {
       await apiRequest(`/admin/users/${id}`, {
         method: 'PUT',
         body: JSON.stringify({
           dept,
           rank,
-          can_edit: canEdit ? 1 : 0,
-          can_approve: canApprove ? 1 : 0
+          can_edit: canEdit,
+          can_view_history: canViewHistory
         })
       });
-      showToast('Official access privileges updated successfully.', 'success');
+      showToast('Official privileges updated successfully.', 'success');
       loadAdminData();
     } catch (e: any) {
-      showToast(e.message || 'Failed to update privileges.', 'error');
+      showToast(e.message || 'Failed to save official permissions.', 'error');
     }
   };
 
@@ -254,7 +254,7 @@ export const Administration: React.FC = () => {
           <div className="section-card">
             <h4 className="section-title" style={{ marginBottom: '0.25rem' }}>Official Account Permissions Matrix</h4>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-              Configure rank, department clearances, edit permissions, and approval rights for officials. Changes take effect on next login.
+              Configure rank, department clearances, edit permissions, and version history rights for officials. Changes take effect on next login.
             </p>
             <div className="table-wrapper">
               <table className="data-table">
@@ -264,7 +264,7 @@ export const Administration: React.FC = () => {
                     <th>Department</th>
                     <th>Designation / Rank</th>
                     <th style={{ textAlign: 'center', width: '150px' }}>Can Edit</th>
-                    <th style={{ textAlign: 'center', width: '150px' }}>Can Approve</th>
+                    <th style={{ textAlign: 'center', width: '150px' }}>Version History</th>
                     <th style={{ textAlign: 'center', width: '120px' }}>Actions</th>
                   </tr>
                 </thead>
@@ -321,10 +321,10 @@ export const Administration: React.FC = () => {
                         <input
                           type="checkbox"
                           style={{ width: '16px', height: '16px', cursor: 'pointer' }}
-                          checked={!!prof.can_approve}
+                          checked={!!prof.can_view_history}
                           onChange={e => {
                             const val = e.target.checked ? 1 : 0;
-                            setProfiles(prev => prev.map(p => p.id === prof.id ? { ...p, can_approve: val } : p));
+                            setProfiles(prev => prev.map(p => p.id === prof.id ? { ...p, can_view_history: val } : p));
                           }}
                         />
                       </td>
@@ -332,7 +332,7 @@ export const Administration: React.FC = () => {
                         <button
                           className="btn-primary"
                           style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
-                          onClick={() => handleSaveUser(prof.id, prof.dept, prof.rank, !!prof.can_edit, !!prof.can_approve)}
+                          onClick={() => handleSaveUser(prof.id, prof.dept, prof.rank, !!prof.can_edit, !!prof.can_view_history)}
                         >
                           Save
                         </button>

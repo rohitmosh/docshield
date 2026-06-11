@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { DocumentController } from '../controllers/DocumentController';
-import { authMiddleware, requireEdit, requireApprove, requireAdmin } from '../middleware/authMiddleware';
+import { authMiddleware, requireEdit, requireViewHistory, requireAdmin } from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -9,12 +9,12 @@ router.use(authMiddleware as any);
 
 router.get('/vault', DocumentController.getVault);
 router.post('/folders', requireEdit as any, DocumentController.createFolder);
-router.post('/upload', requireEdit as any, DocumentController.uploadFile);
+router.post('/upload', requireAdmin as any, DocumentController.uploadFile);
 router.put('/:id/metadata', requireEdit as any, DocumentController.updateMetadata);
 router.post('/:id/lock', requireEdit as any, DocumentController.toggleLock);
 router.delete('/:id', requireEdit as any, DocumentController.deleteFile);
 router.post('/:id/decrypt', DocumentController.decryptFile);
-router.post('/:id/approve', requireApprove as any, DocumentController.approveDocument);
+router.post('/:id/approve', requireViewHistory as any, DocumentController.approveDocument);
 router.get('/:id/download', DocumentController.downloadFile);
 
 // Permissions updates

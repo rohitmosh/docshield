@@ -595,7 +595,7 @@ export const Repository: React.FC = () => {
   };
 
   const isAllSelected = files.length > 0 && selectedFileIds.size === files.length;
-  const canUpload = user.role === 'SYSTEM_ADMIN' || user.can_edit === 1;
+  const canUpload = user.role === 'SYSTEM_ADMIN';
   const canManagePerms = user.role === 'SYSTEM_ADMIN';
 
   return (
@@ -801,7 +801,7 @@ export const Repository: React.FC = () => {
                       const showEdit = canEdit && (!isLocked || isLockedByMe);
                       const isExpanded = expandedFileIds.has(doc.id);
                       const previousVersions = doc.versions ? doc.versions.filter(v => v.version !== doc.version) : [];
-                      const showToggle = previousVersions.length > 0 && user.role === 'SYSTEM_ADMIN';
+                      const showToggle = previousVersions.length > 0 && (user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1);
 
                       return (
                         <React.Fragment key={doc.id}>

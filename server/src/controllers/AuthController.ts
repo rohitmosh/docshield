@@ -44,7 +44,7 @@ export class AuthController {
           avatar: user.avatar,
           rank: user.rank,
           can_edit: user.can_edit,
-          can_approve: user.can_approve
+          can_view_history: user.can_view_history
         },
         env.JWT_SECRET,
         { expiresIn: '24h' }
@@ -61,7 +61,7 @@ export class AuthController {
           avatar: user.avatar,
           rank: user.rank,
           can_edit: user.can_edit,
-          can_approve: user.can_approve
+          can_view_history: user.can_view_history
         }
       });
     } catch (error: any) {

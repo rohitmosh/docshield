@@ -8,7 +8,10 @@ export const Dashboard: React.FC = () => {
     total: 0,
     encrypted: 0,
     pending: 0,
-    confidential: 0
+    confidential: 0,
+    deptTotal: 0,
+    myLocked: 0,
+    deptConfidential: 0
   });
   const [classifications, setClassifications] = useState({
     PUBLIC: 0,
@@ -16,6 +19,7 @@ export const Dashboard: React.FC = () => {
     CONFIDENTIAL: 0
   });
   const [deptDistribution, setDeptDistribution] = useState<Record<string, number>>({});
+  const [categoryDistribution, setCategoryDistribution] = useState<Record<string, number>>({});
   const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
   const [hasAuditAccess, setHasAuditAccess] = useState(false);
 
@@ -31,23 +35,39 @@ export const Dashboard: React.FC = () => {
         const pending = files.filter(f => f.status === 'pending').length;
         const confidential = files.filter(f => f.classification === 'CONFIDENTIAL').length;
 
-        setStats({ total, encrypted, pending, confidential });
+        const deptTotal = files.filter(f => f.department === user.dept).length;
+        const myLocked = files.filter(f => f.locked_by === user.name).length;
+        const deptConfidential = files.filter(f => f.department === user.dept && f.classification === 'CONFIDENTIAL').length;
+
+        setStats({ total, encrypted, pending, confidential, deptTotal, myLocked, deptConfidential });
 
         // Chart 1: Classification chart counts
         const classes = { PUBLIC: 0, INTERNAL: 0, CONFIDENTIAL: 0 };
-        files.forEach(f => {
+        const targetFilesForClassChart = user.role === 'SYSTEM_ADMIN' 
+          ? files 
+          : files.filter(f => f.department === user.dept);
+
+        targetFilesForClassChart.forEach(f => {
           if (f.classification in classes) {
             classes[f.classification as keyof typeof classes]++;
           }
         });
         setClassifications(classes);
 
-        // Chart 2: Department distribution
-        const depts: Record<string, number> = {};
-        files.forEach(f => {
-          depts[f.department] = (depts[f.department] || 0) + 1;
-        });
-        setDeptDistribution(depts);
+        // Chart 2: Department distribution (Admin only) or Category distribution (Official only)
+        if (user.role === 'SYSTEM_ADMIN') {
+          const depts: Record<string, number> = {};
+          files.forEach(f => {
+            depts[f.department] = (depts[f.department] || 0) + 1;
+          });
+          setDeptDistribution(depts);
+        } else {
+          const cats: Record<string, number> = {};
+          files.forEach(f => {
+            cats[f.category] = (cats[f.category] || 0) + 1;
+          });
+          setCategoryDistribution(cats);
+        }
 
         // Conditional Audit Log fetching based on role
         const isAdmin = user.role === 'SYSTEM_ADMIN';
@@ -62,7 +82,7 @@ export const Dashboard: React.FC = () => {
     };
 
     fetchDashboardData();
-  }, [apiRequest, user.role]);
+  }, [apiRequest, user.role, user.dept, user.name]);
 
   // Compute SVG chart height percentages
   const maxClassVal = Math.max(...Object.values(classifications), 1);
@@ -73,45 +93,91 @@ export const Dashboard: React.FC = () => {
       
       {/* Metrics Cards Grid */}
       <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(8, 59, 138, 0.08)', color: 'var(--navy)' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
-          </div>
-          <div className="stat-info">
-            <h3 id="dash-stat-total-files">{stats.total}</h3>
-            <p>Total Documents</p>
-          </div>
-        </div>
+        {user.role === 'SYSTEM_ADMIN' ? (
+          <>
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(8, 59, 138, 0.08)', color: 'var(--navy)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-total-files">{stats.total}</h3>
+                <p>Total Documents</p>
+              </div>
+            </div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(22, 163, 74, 0.08)', color: 'var(--success)' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-          </div>
-          <div className="stat-info">
-            <h3 id="dash-stat-encrypted-files">{stats.encrypted}</h3>
-            <p>Encrypted Wrappers</p>
-          </div>
-        </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(22, 163, 74, 0.08)', color: 'var(--success)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-encrypted-files">{stats.encrypted}</h3>
+                <p>Encrypted Wrappers</p>
+              </div>
+            </div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(217, 119, 6, 0.08)', color: 'var(--warning)' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
-          </div>
-          <div className="stat-info">
-            <h3 id="dash-stat-pending-reviews">{stats.pending}</h3>
-            <p>Pending Reviews</p>
-          </div>
-        </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(217, 119, 6, 0.08)', color: 'var(--warning)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-pending-reviews">{stats.pending}</h3>
+                <p>Pending Reviews</p>
+              </div>
+            </div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(220, 38, 38, 0.08)', color: 'var(--error)' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-          </div>
-          <div className="stat-info">
-            <h3 id="dash-stat-confidential-files">{stats.confidential}</h3>
-            <p>CONFIDENTIAL Files</p>
-          </div>
-        </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(220, 38, 38, 0.08)', color: 'var(--error)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-confidential-files">{stats.confidential}</h3>
+                <p>CONFIDENTIAL Files</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(8, 59, 138, 0.08)', color: 'var(--navy)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-dept-files">{stats.deptTotal}</h3>
+                <p>{user.dept} Department Files</p>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(217, 119, 6, 0.08)', color: 'var(--warning)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-locked-files">{stats.myLocked}</h3>
+                <p>My Active Checkouts</p>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(22, 163, 74, 0.08)', color: 'var(--success)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-accessible-files">{stats.total}</h3>
+                <p>Total Cleared Access</p>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: 'rgba(220, 38, 38, 0.08)', color: 'var(--error)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              </div>
+              <div className="stat-info">
+                <h3 id="dash-stat-dept-confidential">{stats.deptConfidential}</h3>
+                <p>Dept Confidential Files</p>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* SVG Analytics Charts Section */}
@@ -119,7 +185,9 @@ export const Dashboard: React.FC = () => {
         
         {/* Classification Distribution */}
         <div className="section-card" style={{ height: '320px', display: 'flex', flexDirection: 'column' }}>
-          <h4 style={{ fontWeight: 700, color: 'var(--navy)', marginBottom: '1.5rem', fontSize: '1.05rem' }}>Classification Metrics</h4>
+          <h4 style={{ fontWeight: 700, color: 'var(--navy)', marginBottom: '1.5rem', fontSize: '1.05rem' }}>
+            {user.role === 'SYSTEM_ADMIN' ? 'Classification Metrics' : `${user.dept} Classification Breakdown`}
+          </h4>
           <div id="dash-classification-chart" className="chart-bar-container" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', flexGrow: 1, height: '180px', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
             {Object.entries(classifications).map(([label, val]) => {
               const heightPercent = Math.max((val / maxClassVal) * 80, 5);
@@ -140,25 +208,47 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Department Distribution */}
+        {/* Second Chart: Department distribution (Admin) OR Category distribution (Official) */}
         <div className="section-card" style={{ height: '320px', display: 'flex', flexDirection: 'column' }}>
-          <h4 style={{ fontWeight: 700, color: 'var(--navy)', marginBottom: '1.5rem', fontSize: '1.05rem' }}>Department Evacuation Loads</h4>
+          <h4 style={{ fontWeight: 700, color: 'var(--navy)', marginBottom: '1.5rem', fontSize: '1.05rem' }}>
+            {user.role === 'SYSTEM_ADMIN' ? 'Department Evacuation Loads' : 'Accessible Categories Breakdown'}
+          </h4>
           <div id="dash-department-chart" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flexGrow: 1, justifyContent: 'center' }}>
-            {Object.entries(deptDistribution).length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>No department files loaded.</p>
-            ) : (
-              Object.entries(deptDistribution).map(([dept, val]) => {
-                const widthPercent = (val / maxDeptVal) * 100;
-                return (
-                  <div key={dept} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem' }}>
-                    <span style={{ fontWeight: 600, width: '90px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', textAlign: 'right' }}>{dept}</span>
-                    <div style={{ flexGrow: 1, height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${widthPercent}%`, background: 'var(--primary-blue)', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+            {user.role === 'SYSTEM_ADMIN' ? (
+              Object.entries(deptDistribution).length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>No department files loaded.</p>
+              ) : (
+                Object.entries(deptDistribution).map(([dept, val]) => {
+                  const widthPercent = (val / maxDeptVal) * 100;
+                  return (
+                    <div key={dept} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem' }}>
+                      <span style={{ fontWeight: 600, width: '90px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', textAlign: 'right' }}>{dept}</span>
+                      <div style={{ flexGrow: 1, height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${widthPercent}%`, background: 'var(--primary-blue)', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+                      </div>
+                      <span style={{ fontWeight: 700, width: '20px' }}>{val}</span>
                     </div>
-                    <span style={{ fontWeight: 700, width: '20px' }}>{val}</span>
-                  </div>
-                );
-              })
+                  );
+                })
+              )
+            ) : (
+              Object.entries(categoryDistribution).length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center' }}>No files categorized.</p>
+              ) : (
+                Object.entries(categoryDistribution).map(([cat, val]) => {
+                  const maxCatVal = Math.max(...Object.values(categoryDistribution), 1);
+                  const widthPercent = (val / maxCatVal) * 100;
+                  return (
+                    <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.8rem' }}>
+                      <span style={{ fontWeight: 600, width: '90px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', textAlign: 'right' }}>{cat}</span>
+                      <div style={{ flexGrow: 1, height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${widthPercent}%`, background: 'var(--primary-blue)', borderRadius: '4px', transition: 'width 0.3s ease' }} />
+                      </div>
+                      <span style={{ fontWeight: 700, width: '20px' }}>{val}</span>
+                    </div>
+                  );
+                })
+              )
             )}
           </div>
         </div>

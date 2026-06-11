@@ -17,7 +17,7 @@ export function runSeeds() {
 
   // 1. Seed Users
   const userStmt = db.prepare(`
-    INSERT INTO users (id, name, email, role, dept, avatar, rank, can_edit, can_approve)
+    INSERT INTO users (id, name, email, role, dept, avatar, rank, can_edit, can_view_history)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 

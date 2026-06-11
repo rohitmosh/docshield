@@ -47,7 +47,7 @@ export const Workflows: React.FC = () => {
     }
   };
 
-  const isApprover = user.role === 'SYSTEM_ADMIN' || user.can_approve === 1;
+  const isApprover = user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1;
 
   const getFileIcon = (type: string) => {
     let color = '#3B82F6';

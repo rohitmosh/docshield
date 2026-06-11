@@ -28,7 +28,7 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ currentRoute, ch
   };
 
   // Visibility flags based on permissions
-  const canSeeAdmin = user.role === 'SYSTEM_ADMIN' || user.can_approve === 1;
+  const canSeeAdmin = user.role === 'SYSTEM_ADMIN';
   const canSeeAudits = user.role === 'SYSTEM_ADMIN';
 
   return (

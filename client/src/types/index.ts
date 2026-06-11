@@ -7,7 +7,7 @@ export interface User {
   avatar: string;
   rank?: string;
   can_edit?: number;
-  can_approve?: number;
+  can_view_history?: number;
 }
 
 export interface Folder {
