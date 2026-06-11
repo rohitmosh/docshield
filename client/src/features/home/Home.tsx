@@ -5,7 +5,6 @@ import type { File } from '../../types';
 export const Home: React.FC = () => {
   const { apiRequest } = useAuth();
   const [recentDocs, setRecentDocs] = useState<File[]>([]);
-  const [publicCount, setPublicCount] = useState(0);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -13,7 +12,6 @@ export const Home: React.FC = () => {
         const data = await apiRequest('/documents/vault?folderId=root');
         if (data && data.files) {
           const publicFiles = data.files.filter((f: File) => f.classification === 'PUBLIC' && f.status === 'published');
-          setPublicCount(publicFiles.length);
           setRecentDocs(publicFiles.sort((a: File, b: File) => b.modified_time - a.modified_time).slice(0, 4));
         }
       } catch (e) {
@@ -60,7 +58,7 @@ export const Home: React.FC = () => {
       <div className="hero-section">
         <div className="hero-container">
           <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-            <img src="/docshield_full.png" alt="DocShield logo" style={{ height: '70px', objectFit: 'contain' }} />
+            <img src="/docshield_full.png" alt="DocShield logo" style={{ height: '98px', objectFit: 'contain' }} />
           </div>
           <div className="badge-tagline">Secure Corporate Repository</div>
           <h1 className="hero-title">Odisha Hydro Power Corporation <span>DocShield</span></h1>
@@ -68,39 +66,6 @@ export const Home: React.FC = () => {
           <div className="hero-actions">
             <a href="#public-documents" className="btn-primary" style={{ textDecoration: 'none' }}>Browse Public Records</a>
             <a href="#login" className="btn-secondary" style={{ textDecoration: 'none' }}>Internal Log In</a>
-          </div>
-        </div>
-      </div>
-
-      {/* Statistics Section */}
-      <div className="stats-section">
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>
-            </div>
-            <div className="stat-info">
-              <h3>{publicCount || 4}</h3>
-              <p>Public Documents</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-            </div>
-            <div className="stat-info">
-              <h3>6</h3>
-              <p>Key Departments</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
-            </div>
-            <div className="stat-info">
-              <h3>12 Yrs</h3>
-              <p>Archived History</p>
-            </div>
           </div>
         </div>
       </div>
