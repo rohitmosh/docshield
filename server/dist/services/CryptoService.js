@@ -8,6 +8,10 @@ class CryptoService {
     static verifyAndDecrypt(docId, user, ip, version) {
         let file;
         if (version) {
+            const canViewHistory = user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1;
+            if (!canViewHistory) {
+                throw new Error('Access Denied: You do not have permissions to view historical versions.');
+            }
             file = FileRepository_1.FileRepository.findVersion(docId, version);
             if (!file)
                 throw new Error('Historical version not found');

@@ -15,7 +15,7 @@ function runSeeds() {
     console.log('Seeding initial system database state...');
     // 1. Seed Users
     const userStmt = db_1.db.prepare(`
-    INSERT INTO users (id, name, email, role, dept, avatar, rank, can_edit, can_approve)
+    INSERT INTO users (id, name, email, role, dept, avatar, rank, can_edit, can_view_history)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
     userStmt.run('anonymous', 'Public Visitor', null, 'ANONYMOUS', 'Public', 'PV', 'Guest', 0, 0);

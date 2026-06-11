@@ -24,7 +24,7 @@ function runMigrations() {
       avatar TEXT,
       rank TEXT,
       can_edit INTEGER DEFAULT 0,
-      can_approve INTEGER DEFAULT 0,
+      can_view_history INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);

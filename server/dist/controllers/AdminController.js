@@ -85,12 +85,12 @@ class AdminController {
     static updateUser(req, res) {
         try {
             const { id } = req.params;
-            const { dept, rank, can_edit, can_approve } = req.body;
+            const { dept, rank, can_edit, can_view_history } = req.body;
             UserRepository_1.UserRepository.update(id, {
                 dept,
                 rank,
                 can_edit: can_edit ? 1 : 0,
-                can_approve: can_approve ? 1 : 0
+                can_view_history: can_view_history ? 1 : 0
             });
             res.status(200).json({ success: true });
         }

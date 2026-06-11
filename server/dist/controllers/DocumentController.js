@@ -11,15 +11,22 @@ class DocumentController {
             const folderId = req.query.folderId || 'root';
             const all = req.query.all === 'true';
             const user = req.user;
+            const canViewHistory = user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1;
             if (all) {
                 let files = FileRepository_1.FileRepository.findAll();
                 if (user.role !== 'SYSTEM_ADMIN') {
                     files = files.filter(f => f.classification === 'PUBLIC' || f.author === user.name || f.allowed_depts.includes(user.dept));
                 }
+                if (!canViewHistory) {
+                    files = files.map(f => ({ ...f, versions: [] }));
+                }
                 res.status(200).json({ files });
             }
             else {
                 const content = DocumentService_1.DocumentService.getVaultContent(folderId, user.dept, user.role, user.name);
+                if (!canViewHistory) {
+                    content.files = content.files.map(f => ({ ...f, versions: [] }));
+                }
                 res.status(200).json(content);
             }
         }
@@ -129,6 +136,11 @@ class DocumentController {
             const user = req.user;
             let file;
             if (version) {
+                const canViewHistory = user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1;
+                if (!canViewHistory) {
+                    res.status(403).json({ error: 'Access Denied: You do not have permissions to download historical versions.' });
+                    return;
+                }
                 file = FileRepository_1.FileRepository.findVersion(id, version);
                 if (!file) {
                     res.status(404).json({ error: 'Historical version not found' });

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = authMiddleware;
 exports.requireRole = requireRole;
 exports.requireEdit = requireEdit;
-exports.requireApprove = requireApprove;
+exports.requireViewHistory = requireViewHistory;
 exports.requireAdmin = requireAdmin;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const env_1 = require("../config/env");
@@ -22,7 +22,7 @@ function authMiddleware(req, res, next) {
             avatar: 'PV',
             rank: 'Guest',
             can_edit: 0,
-            can_approve: 0
+            can_view_history: 0
         };
         next();
         return;
@@ -62,16 +62,16 @@ function requireEdit(req, res, next) {
         res.status(403).json({ error: 'Access Denied: You do not have edit permissions.' });
     }
 }
-function requireApprove(req, res, next) {
+function requireViewHistory(req, res, next) {
     if (!req.user) {
         res.status(401).json({ error: 'Authentication required' });
         return;
     }
-    if (req.user.role === 'SYSTEM_ADMIN' || req.user.can_approve === 1) {
+    if (req.user.role === 'SYSTEM_ADMIN' || req.user.can_view_history === 1) {
         next();
     }
     else {
-        res.status(403).json({ error: 'Access Denied: You do not have approve permissions.' });
+        res.status(403).json({ error: 'Access Denied: You do not have permission to view version history.' });
     }
 }
 function requireAdmin(req, res, next) {
