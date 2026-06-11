@@ -10,48 +10,43 @@ The application leverages a hybrid cryptography architecture to protect sensitiv
 
 Below are the operational views and interfaces of DocShield:
 
-<details>
-  <summary>🔍 Click to Expand Screenshot Gallery</summary>
+### 🏠 Public Landing & Public Documents
+* **Landing Portal (Hero View)**:
+  ![Landing Portal](screenshots/Screenshot%202026-06-11%20at%2012.19.38.png)
+* **Public Records Explorer**:
+  ![Public Records Explorer](screenshots/Screenshot%202026-06-11%20at%2012.19.56.png)
 
-  ### 🏠 Public Landing & Public Documents
-  * **Landing Portal (Hero View)**:
-    ![Landing Portal](screenshots/Screenshot%202026-06-11%20at%2012.19.38.png)
-  * **Public Records Explorer**:
-    ![Public Records Explorer](screenshots/Screenshot%202026-06-11%20at%2012.19.56.png)
+### 🔑 Authentication & Login
+* **Role-Based Access Entry**:
+  ![Login Interface](screenshots/Screenshot%202026-06-11%20at%2012.20.20.png)
 
-  ### 🔑 Authentication & Login
-  * **Role-Based Access Entry**:
-    ![Login Interface](screenshots/Screenshot%202026-06-11%20at%2012.20.20.png)
+### 📊 User Dashboards
+* **System Operations Dashboard (Admin)**:
+  ![System Admin Dashboard](screenshots/Screenshot%202026-06-11%20at%2012.20.41.png)
+* **Department Dashboard (Official)**:
+  ![Official Scoped Dashboard](screenshots/Screenshot%202026-06-11%20at%2012.21.18.png)
 
-  ### 📊 User Dashboards
-  * **System Operations Dashboard (Admin)**:
-    ![System Admin Dashboard](screenshots/Screenshot%202026-06-11%20at%2012.20.41.png)
-  * **Department Dashboard (Official)**:
-    ![Official Scoped Dashboard](screenshots/Screenshot%202026-06-11%20at%2012.21.18.png)
+### 📂 Secure Vault & Document Repository
+* **Secure Repository Explorer**:
+  ![Repository Explorer](screenshots/Screenshot%202026-06-11%20at%2012.27.29.png)
+* **Version History Nested Dropdown**:
+  ![Version History Nested List](screenshots/Screenshot%202026-06-11%20at%2012.27.38.png)
+* **Document Upload Modal**:
+  ![Upload Modal](screenshots/Screenshot%202026-06-11%20at%2012.27.49.png)
 
-  ### 📂 Secure Vault & Document Repository
-  * **Secure Repository Explorer**:
-    ![Repository Explorer](screenshots/Screenshot%202026-06-11%20at%2012.27.29.png)
-  * **Version History Nested Dropdown**:
-    ![Version History Nested List](screenshots/Screenshot%202026-06-11%20at%2012.27.38.png)
-  * **Document Upload Modal**:
-    ![Upload Modal](screenshots/Screenshot%202026-06-11%20at%2012.27.49.png)
+### 🛠️ Administrative & Management Consoles
+* **Admin Panel - User Capability Matrix**:
+  ![User Administration](screenshots/Screenshot%202026-06-11%20at%2012.28.05.png)
+* **Admin Panel - Tags & Departments Management**:
+  ![Tags and Departments Management](screenshots/Screenshot%202026-06-11%20at%2012.28.15.png)
 
-  ### 🛠️ Administrative & Management Consoles
-  * **Admin Panel - User Capability Matrix**:
-    ![User Administration](screenshots/Screenshot%202026-06-11%20at%2012.28.05.png)
-  * **Admin Panel - Tags & Departments Management**:
-    ![Tags and Departments Management](screenshots/Screenshot%202026-06-11%20at%2012.28.15.png)
-
-  ### 🖥️ Cryptographic Security & Inspection
-  * **Decrypted Document View**:
-    ![Decrypted Document Viewer](screenshots/Screenshot%202026-06-11%20at%2012.28.29.png)
-  * **Cryptographic Scrambling Pipeline**:
-    ![Security Pipeline Control](screenshots/Screenshot%202026-06-11%20at%2012.28.37.png)
-  * **Immutable Ledger Compliance Audit Log**:
-    ![Audit Logs Console](screenshots/Screenshot%202026-06-11%20at%2012.28.48.png)
-
-</details>
+### 🖥️ Cryptographic Security & Inspection
+* **Decrypted Document View**:
+  ![Decrypted Document Viewer](screenshots/Screenshot%202026-06-11%20at%2012.28.29.png)
+* **Cryptographic Scrambling Pipeline**:
+  ![Security Pipeline Control](screenshots/Screenshot%202026-06-11%20at%2012.28.37.png)
+* **Immutable Ledger Compliance Audit Log**:
+  ![Audit Logs Console](screenshots/Screenshot%202026-06-11%20at%2012.28.48.png)
 
 ---
 
