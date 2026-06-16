@@ -35,6 +35,7 @@ function runMigrations() {
       name TEXT NOT NULL,
       parent_id TEXT NOT NULL,
       allowed_depts TEXT NOT NULL, -- JSON string array
+      allowed_users TEXT DEFAULT '[]', -- JSON string array
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);

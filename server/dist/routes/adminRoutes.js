@@ -17,4 +17,5 @@ router.get('/tags', AdminController_1.AdminController.getTags);
 router.post('/tags', AdminController_1.AdminController.createTag);
 router.get('/departments', AdminController_1.AdminController.getDepartments);
 router.post('/departments', AdminController_1.AdminController.createDepartment);
+router.put('/departments/:id', AdminController_1.AdminController.updateDepartment);
 exports.default = router;

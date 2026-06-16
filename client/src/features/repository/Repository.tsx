@@ -56,9 +56,10 @@ export const Repository: React.FC = () => {
   };
   const [availableTags, setAvailableTags] = useState<any[]>([]);
   const [availableDepts, setAvailableDepts] = useState<any[]>([]);
+  const [allProfiles, setAllProfiles] = useState<any[]>([]);
 
   const [showPermModal, setShowPermModal] = useState(false);
-  const [permResource, setPermResource] = useState<{ id: string; name: string; type: 'folder' | 'file'; allowedDepts: string[] } | null>(null);
+  const [permResource, setPermResource] = useState<{ id: string; name: string; type: 'folder' | 'file'; allowedDepts: string[]; allowedUsers: string[] } | null>(null);
 
   // Bulk actions modal states
   const [showBulkTagsModal, setShowBulkTagsModal] = useState(false);
@@ -267,8 +268,10 @@ export const Repository: React.FC = () => {
         setAvailableTags(tagsData || []);
         const deptsData = await apiRequest('/admin/departments');
         setAvailableDepts(deptsData || []);
+        const profilesData = await apiRequest('/auth/profiles');
+        setAllProfiles(profilesData || []);
       } catch (e) {
-        console.error('Error fetching tags/departments options:', e);
+        console.error('Error fetching metadata/profiles options:', e);
       }
     };
     if (user.role === 'SYSTEM_ADMIN') {
@@ -293,6 +296,17 @@ export const Repository: React.FC = () => {
     try {
       await apiRequest(`/documents/${docId}`, { method: 'DELETE' });
       showToast(`${name} permanently removed.`, 'success');
+      loadVault();
+    } catch (e: any) {
+      showToast(e.message, 'error');
+    }
+  };
+
+  const handleDeleteFolder = async (folderId: string, name: string) => {
+    if (!window.confirm(`WARNING: Deleting the folder "${name}" will permanently delete all documents and subfolders inside it. Are you sure you want to proceed?`)) return;
+    try {
+      await apiRequest(`/documents/folders/${folderId}`, { method: 'DELETE' });
+      showToast(`Folder "${name}" and all its contents permanently removed.`, 'success');
       loadVault();
     } catch (e: any) {
       showToast(e.message, 'error');
@@ -430,7 +444,8 @@ export const Repository: React.FC = () => {
       id: resource.id,
       name: resource.name,
       type,
-      allowedDepts: resource.allowed_depts || resource.allowedDepts || []
+      allowedDepts: resource.allowed_depts || resource.allowedDepts || [],
+      allowedUsers: resource.allowed_users || resource.allowedUsers || []
     });
     setShowPermModal(true);
   };
@@ -453,7 +468,8 @@ export const Repository: React.FC = () => {
       await apiRequest(path, {
         method: 'PUT',
         body: JSON.stringify({
-          allowedDepts: permResource.allowedDepts
+          allowedDepts: permResource.allowedDepts,
+          allowedUsers: permResource.type === 'folder' ? permResource.allowedUsers : []
         })
       });
 
@@ -472,7 +488,15 @@ export const Repository: React.FC = () => {
       const depts = checked 
         ? [...prev.allowedDepts, dept] 
         : prev.allowedDepts.filter(d => d !== dept);
-      return { ...prev, allowedDepts: depts };
+      
+      let users = prev.allowedUsers;
+      if (!checked) {
+        users = prev.allowedUsers.filter(uid => {
+          const uProfile = allProfiles.find(p => p.id === uid);
+          return uProfile ? uProfile.dept !== dept : true;
+        });
+      }
+      return { ...prev, allowedDepts: depts, allowedUsers: users };
     });
   };
 
@@ -746,19 +770,34 @@ export const Repository: React.FC = () => {
                     <div className="folder-icon" style={{ color: 'var(--primary-blue)' }}>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
                     </div>
-                    {canManagePerms && (
-                      <button 
-                        className="btn-icon folder-perm-btn" 
-                        title="Manage Permissions"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openPermissions(folder, 'folder');
-                        }}
-                        style={{ padding: '2px', color: 'var(--text-muted)' }}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                      </button>
-                    )}
+                    <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      {canManagePerms && (
+                        <button 
+                          className="btn-icon folder-perm-btn" 
+                          title="Manage Permissions"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openPermissions(folder, 'folder');
+                          }}
+                          style={{ padding: '2px', color: 'var(--text-muted)' }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                        </button>
+                      )}
+                      {user.role === 'SYSTEM_ADMIN' && (
+                        <button 
+                          className="btn-icon folder-delete-btn" 
+                          title="Delete Folder"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteFolder(folder.id, folder.name);
+                          }}
+                          style={{ padding: '2px', color: 'var(--error)' }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="folder-name" style={{ fontWeight: 600, color: 'var(--navy)', fontSize: '0.95rem' }}>{folder.name}</div>
                 </div>
@@ -1148,6 +1187,42 @@ export const Repository: React.FC = () => {
                 })}
               </div>
             </div>
+            {permResource.type === 'folder' && (
+              <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--navy)', display: 'block', marginBottom: '0.5rem' }}>
+                  Restrict to Specific Officials (Optional):
+                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '150px', overflowY: 'auto', background: 'var(--bg-slate)', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  {allProfiles
+                    .filter(p => p.role === 'OFFICIAL' && permResource.allowedDepts.includes(p.dept))
+                    .map(p => {
+                      const isUserChecked = permResource.allowedUsers.includes(p.id);
+                      return (
+                        <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={isUserChecked}
+                            onChange={e => {
+                              const checked = e.target.checked;
+                              setPermResource(prev => {
+                                if (!prev) return null;
+                                const users = checked
+                                  ? [...prev.allowedUsers, p.id]
+                                  : prev.allowedUsers.filter(uid => uid !== p.id);
+                                return { ...prev, allowedUsers: users };
+                              });
+                            }}
+                          />
+                          <span>{p.name} ({p.dept} - {p.rank})</span>
+                        </label>
+                      );
+                    })}
+                  {allProfiles.filter(p => p.role === 'OFFICIAL' && permResource.allowedDepts.includes(p.dept)).length === 0 && (
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>No officials found in the selected departments.</span>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="dialog-footer" style={{ marginTop: '1.5rem' }}>
               <button type="button" className="btn-secondary" onClick={() => setShowPermModal(false)}>Cancel</button>
               <button type="submit" className="btn-primary">Apply Access Controls</button>

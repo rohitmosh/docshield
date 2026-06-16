@@ -9,6 +9,7 @@ class FolderRepository {
             name: row.name,
             parent_id: row.parent_id,
             allowed_depts: JSON.parse(row.allowed_depts || '[]'),
+            allowed_users: JSON.parse(row.allowed_users || '[]'),
             created_at: row.created_at
         };
     }
@@ -29,14 +30,18 @@ class FolderRepository {
     }
     static create(folder) {
         const stmt = db_1.db.prepare(`
-      INSERT INTO folders (id, name, parent_id, allowed_depts)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO folders (id, name, parent_id, allowed_depts, allowed_users)
+      VALUES (?, ?, ?, ?, ?)
     `);
-        stmt.run(folder.id, folder.name, folder.parent_id, JSON.stringify(folder.allowed_depts));
+        stmt.run(folder.id, folder.name, folder.parent_id, JSON.stringify(folder.allowed_depts), JSON.stringify(folder.allowed_users || []));
     }
     static updateAllowedDepts(id, allowedDepts) {
         const stmt = db_1.db.prepare('UPDATE folders SET allowed_depts = ? WHERE id = ?');
         stmt.run(JSON.stringify(allowedDepts), id);
+    }
+    static updatePermissions(id, allowedDepts, allowedUsers) {
+        const stmt = db_1.db.prepare('UPDATE folders SET allowed_depts = ?, allowed_users = ? WHERE id = ?');
+        stmt.run(JSON.stringify(allowedDepts), JSON.stringify(allowedUsers), id);
     }
     static delete(id) {
         const stmt = db_1.db.prepare('DELETE FROM folders WHERE id = ?');

@@ -22,6 +22,8 @@ export const Administration: React.FC = () => {
   const [newTagName, setNewTagName] = useState('');
   const [newDeptName, setNewDeptName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [editingDeptId, setEditingDeptId] = useState<number | null>(null);
+  const [editingDeptName, setEditingDeptName] = useState('');
 
   const isSystemAdmin = user.role === 'SYSTEM_ADMIN';
   const isApprover = user.role === 'SYSTEM_ADMIN' || user.can_view_history === 1;
@@ -139,6 +141,24 @@ export const Administration: React.FC = () => {
       setDepartments(deptsData || []);
     } catch (e: any) {
       showToast(e.message || 'Failed to add department.', 'error');
+    }
+  };
+
+  const handleSaveDeptName = async (id: number) => {
+    if (!editingDeptName.trim()) return;
+    try {
+      await apiRequest(`/admin/departments/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ name: editingDeptName.trim() })
+      });
+      showToast(`Department updated to "${editingDeptName.trim()}" successfully.`, 'success');
+      setEditingDeptId(null);
+      const deptsData = await apiRequest('/admin/departments');
+      setDepartments(deptsData || []);
+      // Reload overall admin data to update other references
+      loadAdminData();
+    } catch (e: any) {
+      showToast(e.message || 'Failed to update department name.', 'error');
     }
   };
 
@@ -403,11 +423,57 @@ export const Administration: React.FC = () => {
                 {departments.length === 0 ? (
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>No departments found.</span>
                 ) : (
-                  departments.map(d => (
-                    <span key={d.id} style={{ display: 'inline-block', background: 'var(--bg-slate)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.2rem 0.5rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--navy)' }}>
-                      {d.name}
-                    </span>
-                  ))
+                  departments.map(d => {
+                    const isEditing = editingDeptId === d.id;
+                    if (isEditing) {
+                      return (
+                        <div key={d.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', background: 'var(--bg-slate)', border: '1px solid var(--primary-blue)', borderRadius: '6px', padding: '0.2rem 0.5rem' }}>
+                          <input 
+                            type="text" 
+                            value={editingDeptName} 
+                            onChange={e => setEditingDeptName(e.target.value)} 
+                            style={{ border: 'none', background: 'none', width: '100px', fontSize: '0.8rem', outline: 'none', color: 'var(--navy)', fontWeight: 600 }}
+                            autoFocus
+                          />
+                          <button 
+                            type="button" 
+                            onClick={() => handleSaveDeptName(d.id)} 
+                            style={{ background: 'none', border: 'none', color: 'var(--success)', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            title="Save"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={() => setEditingDeptId(null)} 
+                            style={{ background: 'none', border: 'none', color: 'var(--error)', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                            title="Cancel"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          </button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <span 
+                        key={d.id} 
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'var(--bg-slate)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '0.2rem 0.5rem', fontSize: '0.8rem', fontWeight: 500, color: 'var(--navy)' }}
+                      >
+                        <span>{d.name}</span>
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setEditingDeptId(d.id);
+                            setEditingDeptName(d.name);
+                          }}
+                          style={{ background: 'none', border: 'none', color: 'var(--text-muted)', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                          title="Edit department name"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                        </button>
+                      </span>
+                    );
+                  })
                 )}
               </div>
             </div>

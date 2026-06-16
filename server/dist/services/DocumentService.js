@@ -10,11 +10,17 @@ function triggerWebhook(event, details) {
     console.log(`[Webhook Service] Dispatched event "${event}" to listeners.`, details);
 }
 class DocumentService {
-    static getVaultContent(folderId, userDept, userRole, userName) {
+    static getVaultContent(folderId, userDept, userRole, userName, userId) {
         // 1. Get child folders
         let folders = FolderRepository_1.FolderRepository.findByParentId(folderId);
         if (userRole !== 'SYSTEM_ADMIN') {
-            folders = folders.filter(f => f.allowed_depts.includes(userDept));
+            folders = folders.filter(f => {
+                // If specific allowed_users list is populated, check if current user is in it.
+                if (f.allowed_users && f.allowed_users.length > 0) {
+                    return userId ? f.allowed_users.includes(userId) : false;
+                }
+                return f.allowed_depts.includes(userDept);
+            });
         }
         // 2. Get child files
         let files = FileRepository_1.FileRepository.findByParentId(folderId);
@@ -267,6 +273,41 @@ class DocumentService {
             role: user.role,
             action: 'Delete Document',
             resource: file.name,
+            status: 'Success',
+            ip_address: ip
+        };
+        AuditRepository_1.AuditRepository.create(log);
+    }
+    static deleteFolderRecursive(folderId) {
+        // 1. Get child files and delete them
+        const files = FileRepository_1.FileRepository.findByParentId(folderId);
+        for (const file of files) {
+            FileRepository_1.FileRepository.delete(file.id);
+        }
+        // 2. Get child folders and delete recursively
+        const childFolders = FolderRepository_1.FolderRepository.findByParentId(folderId);
+        for (const child of childFolders) {
+            this.deleteFolderRecursive(child.id);
+        }
+        // 3. Delete the folder itself
+        FolderRepository_1.FolderRepository.delete(folderId);
+    }
+    static deleteFolder(folderId, user, ip) {
+        if (user.role !== 'SYSTEM_ADMIN') {
+            throw new Error('Access Denied: Only administrators can delete folders.');
+        }
+        const folder = FolderRepository_1.FolderRepository.findById(folderId);
+        if (!folder)
+            throw new Error('Folder not found');
+        this.deleteFolderRecursive(folderId);
+        // Audit Log
+        const log = {
+            id: 'aud-' + Math.random().toString(36).substring(2, 11),
+            timestamp: this.formatDate(new Date()),
+            user: user.email || user.name,
+            role: user.role,
+            action: 'Delete Folder',
+            resource: folder.name,
             status: 'Success',
             ip_address: ip
         };

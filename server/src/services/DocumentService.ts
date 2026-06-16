@@ -12,11 +12,17 @@ function triggerWebhook(event: string, details: any) {
 }
 
 export class DocumentService {
-  static getVaultContent(folderId: string, userDept: string, userRole: string, userName: string) {
+  static getVaultContent(folderId: string, userDept: string, userRole: string, userName: string, userId?: string) {
     // 1. Get child folders
     let folders = FolderRepository.findByParentId(folderId);
     if (userRole !== 'SYSTEM_ADMIN') {
-      folders = folders.filter(f => f.allowed_depts.includes(userDept));
+      folders = folders.filter(f => {
+        // If specific allowed_users list is populated, check if current user is in it.
+        if (f.allowed_users && f.allowed_users.length > 0) {
+          return userId ? f.allowed_users.includes(userId) : false;
+        }
+        return f.allowed_depts.includes(userDept);
+      });
     }
 
     // 2. Get child files
@@ -317,6 +323,45 @@ export class DocumentService {
       role: user.role,
       action: 'Delete Document',
       resource: file.name,
+      status: 'Success',
+      ip_address: ip
+    };
+    AuditRepository.create(log);
+  }
+
+  private static deleteFolderRecursive(folderId: string): void {
+    // 1. Get child files and delete them
+    const files = FileRepository.findByParentId(folderId);
+    for (const file of files) {
+      FileRepository.delete(file.id);
+    }
+    // 2. Get child folders and delete recursively
+    const childFolders = FolderRepository.findByParentId(folderId);
+    for (const child of childFolders) {
+      this.deleteFolderRecursive(child.id);
+    }
+    // 3. Delete the folder itself
+    FolderRepository.delete(folderId);
+  }
+
+  static deleteFolder(folderId: string, user: any, ip: string): void {
+    if (user.role !== 'SYSTEM_ADMIN') {
+      throw new Error('Access Denied: Only administrators can delete folders.');
+    }
+
+    const folder = FolderRepository.findById(folderId);
+    if (!folder) throw new Error('Folder not found');
+
+    this.deleteFolderRecursive(folderId);
+
+    // Audit Log
+    const log: AuditLog = {
+      id: 'aud-' + Math.random().toString(36).substring(2, 11),
+      timestamp: this.formatDate(new Date()),
+      user: user.email || user.name,
+      role: user.role,
+      action: 'Delete Folder',
+      resource: folder.name,
       status: 'Success',
       ip_address: ip
     };

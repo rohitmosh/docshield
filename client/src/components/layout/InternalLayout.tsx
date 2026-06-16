@@ -7,7 +7,20 @@ interface InternalLayoutProps {
 }
 
 export const InternalLayout: React.FC<InternalLayoutProps> = ({ currentRoute, children }) => {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, apiRequest } = useAuth();
+  const [allProfiles, setAllProfiles] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const response = await apiRequest('/auth/profiles');
+        setAllProfiles(response || []);
+      } catch (e) {
+        console.error('Error fetching quick switch profiles:', e);
+      }
+    };
+    fetchProfiles();
+  }, [apiRequest]);
 
   const handleRoleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const role = e.target.value;
@@ -98,9 +111,12 @@ export const InternalLayout: React.FC<InternalLayoutProps> = ({ currentRoute, ch
                 value={user.id} 
                 onChange={handleRoleChange}
               >
-                <option value="anonymous">Public Visitor</option>
-                <option value="official-mgr">Official (Sasmita Dash)</option>
-                <option value="sys-admin">System Admin</option>
+                <option value="anonymous">Public Visitor (Guest)</option>
+                {allProfiles.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.role === 'SYSTEM_ADMIN' ? 'System Admin' : `${p.name} (${p.dept})`}
+                  </option>
+                ))}
               </select>
             </div>
 

@@ -13,7 +13,11 @@ export class AuthController {
       // Fallback matching for text input box login
       if (username) {
         const normalized = username.trim().toLowerCase();
-        if (normalized.includes('admin') || normalized.includes('sys')) {
+        const users = UserRepository.findAll();
+        const matched = users.find(u => u.id.toLowerCase() === normalized || (u.email && u.email.toLowerCase() === normalized));
+        if (matched) {
+          userId = matched.id;
+        } else if (normalized.includes('admin') || normalized.includes('sys')) {
           userId = 'sys-admin';
         } else if (normalized.includes('sasmita') || normalized.includes('mgr') || normalized.includes('manager') || normalized.includes('official') || normalized.includes('dir') || normalized.includes('exec')) {
           userId = 'official-mgr';

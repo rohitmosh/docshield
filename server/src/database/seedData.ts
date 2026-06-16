@@ -24,6 +24,10 @@ export function runSeeds() {
   userStmt.run('anonymous', 'Public Visitor', null, 'ANONYMOUS', 'Public', 'PV', 'Guest', 0, 0);
   userStmt.run('official-mgr', 'Sasmita Dash', 'sasmita.d@ohpc.gov.in', 'OFFICIAL', 'Generation', 'SD', 'Manager', 1, 0);
   userStmt.run('sys-admin', 'System Administrator', 'admin@ohpc.gov.in', 'SYSTEM_ADMIN', 'IT', 'SA', 'Chief IT Officer', 1, 1);
+  userStmt.run('subrat-trans', 'Subrat Senapati', 'subrat.s@ohpc.gov.in', 'OFFICIAL', 'Transmission', 'SS', 'Manager', 1, 0);
+  userStmt.run('ranjan-finance', 'Ranjan Panda', 'ranjan.p@ohpc.gov.in', 'OFFICIAL', 'Finance', 'RP', 'Officer', 1, 0);
+  userStmt.run('priyabrata-hr', 'Priyabrata Sahoo', 'priyabrata.s@ohpc.gov.in', 'OFFICIAL', 'HR', 'PS', 'Officer', 1, 0);
+  userStmt.run('debashis-legal', 'Debashis Mohanty', 'debashis.m@ohpc.gov.in', 'OFFICIAL', 'Legal', 'DM', 'Legal Advisor', 1, 0);
 
   // 2. Seed Tags
   const tagStmt = db.prepare('INSERT INTO tags (name) VALUES (?)');

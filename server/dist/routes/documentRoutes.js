@@ -18,4 +18,5 @@ router.get('/:id/download', DocumentController_1.DocumentController.downloadFile
 // Permissions updates
 router.put('/folders/:id/permissions', authMiddleware_1.requireAdmin, DocumentController_1.DocumentController.updateFolderPermissions);
 router.put('/files/:id/permissions', authMiddleware_1.requireAdmin, DocumentController_1.DocumentController.updateFilePermissions);
+router.delete('/folders/:id', authMiddleware_1.requireAdmin, DocumentController_1.DocumentController.deleteFolder);
 exports.default = router;

@@ -22,7 +22,7 @@ export class DocumentController {
         }
         res.status(200).json({ files });
       } else {
-        const content = DocumentService.getVaultContent(folderId, user.dept, user.role, user.name);
+        const content = DocumentService.getVaultContent(folderId, user.dept, user.role, user.name, user.id);
         if (!canViewHistory) {
           content.files = content.files.map(f => ({ ...f, versions: [] }));
         }
@@ -222,15 +222,28 @@ export class DocumentController {
   static updateFolderPermissions(req: Request, res: Response): void {
     try {
       const { id } = req.params;
-      const { allowedDepts } = req.body;
+      const { allowedDepts, allowedUsers } = req.body;
 
       if (!allowedDepts || !Array.isArray(allowedDepts)) {
         res.status(400).json({ error: 'allowedDepts array is required' });
         return;
       }
 
-      FolderRepository.updateAllowedDepts(id, allowedDepts);
+      FolderRepository.updatePermissions(id, allowedDepts, allowedUsers || []);
       res.status(200).json({ success: true });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  }
+
+  static deleteFolder(req: Request, res: Response): void {
+    try {
+      const { id } = req.params;
+      const user = (req as any).user;
+      const ip = req.ip || '127.0.0.1';
+
+      DocumentService.deleteFolder(id, user, ip);
+      res.status(200).json({ success: true, message: 'Folder and all contents deleted successfully.' });
     } catch (e: any) {
       res.status(500).json({ error: e.message });
     }

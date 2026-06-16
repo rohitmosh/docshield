@@ -150,4 +150,70 @@ export class AdminController {
       res.status(500).json({ error: e.message });
     }
   }
+
+  static updateDepartment(req: Request, res: Response): void {
+    try {
+      const { id } = req.params;
+      const { name } = req.body;
+      const newName = name?.trim();
+
+      if (!newName) {
+        res.status(400).json({ error: 'Department name is required' });
+        return;
+      }
+
+      // Get old name
+      const getOldNameQuery = db.prepare('SELECT name FROM departments WHERE id = ?');
+      const oldNameRow = getOldNameQuery.get(id) as { name: string } | undefined;
+      if (!oldNameRow) {
+        res.status(404).json({ error: 'Department not found' });
+        return;
+      }
+      const oldName = oldNameRow.name;
+
+      if (oldName === newName) {
+        res.status(200).json({ success: true });
+        return;
+      }
+
+      // Update departments table
+      const updateDeptStmt = db.prepare('UPDATE departments SET name = ? WHERE id = ?');
+      updateDeptStmt.run(newName, id);
+
+      // Cascade updates
+      // 1. users
+      const updateUserStmt = db.prepare('UPDATE users SET dept = ? WHERE dept = ?');
+      updateUserStmt.run(newName, oldName);
+
+      // 2. files department
+      const updateFileDeptStmt = db.prepare('UPDATE files SET department = ? WHERE department = ?');
+      updateFileDeptStmt.run(newName, oldName);
+
+      // 3. folders allowed_depts
+      const folders = db.prepare('SELECT id, allowed_depts FROM folders').all() as { id: string; allowed_depts: string }[];
+      const updateFolderDeptsStmt = db.prepare('UPDATE folders SET allowed_depts = ? WHERE id = ?');
+      for (const f of folders) {
+        const depts: string[] = JSON.parse(f.allowed_depts || '[]');
+        if (depts.includes(oldName)) {
+          const updated = depts.map(d => d === oldName ? newName : d);
+          updateFolderDeptsStmt.run(JSON.stringify(updated), f.id);
+        }
+      }
+
+      // 4. files allowed_depts
+      const files = db.prepare('SELECT id, allowed_depts FROM files').all() as { id: string; allowed_depts: string }[];
+      const updateFileDeptsStmt = db.prepare('UPDATE files SET allowed_depts = ? WHERE id = ?');
+      for (const fl of files) {
+        const depts: string[] = JSON.parse(fl.allowed_depts || '[]');
+        if (depts.includes(oldName)) {
+          const updated = depts.map(d => d === oldName ? newName : d);
+          updateFileDeptsStmt.run(JSON.stringify(updated), fl.id);
+        }
+      }
+
+      res.status(200).json({ success: true, oldName, newName });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  }
 }
