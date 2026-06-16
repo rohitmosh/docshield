@@ -188,11 +188,24 @@ Grid Protection Systems:
   );
 
   // 4. doc-4 (PUBLIC)
-  const doc4Content = `OHPC Citizen Charter 2026.
+  const doc4ContentV3 = `OHPC Citizen Charter 2026 (v3.0).
 Serving the state of Odisha with reliable, clean hydro power.
 Public Redressal Cell contact details:
 - Helpline: 1800-345-6789
 - Timing: 10:00 AM to 5:00 PM on all working days.
+- Location: OHPC Corporate Office, Bhubaneswar.`;
+
+  const doc4ContentV2 = `OHPC Citizen Charter 2025 (v2.0).
+Serving the state of Odisha with reliable, clean hydro power.
+Public Redressal Cell contact details:
+- Helpline: 1800-345-1111 (Old)
+- Timing: 10:00 AM to 5:00 PM on all working days.
+- Location: OHPC Corporate Office, Bhubaneswar.`;
+
+  const doc4ContentV1 = `OHPC Citizen Charter 2024 (v1.0).
+Serving the state of Odisha with reliable, clean hydro power.
+Public Redressal Cell contact details:
+- Helpline: 1800-345-0000 (Initial)
 - Location: OHPC Corporate Office, Bhubaneswar.`;
 
   fileStmt.run(
@@ -201,38 +214,61 @@ Public Redressal Cell contact details:
     1767225600000, 1770024000000, 'Sasmita Dash', 'root',
     'Odisha Hydro Power Corporation citizen service charter. Public grievance cells, application timings, hydro power safety zones awareness.',
     allDepts,
-    doc4Content,
+    doc4ContentV3,
     null, null, null
   );
   
   versionStmt.run(
     'doc-4', 'v3.0', 'Sasmita Dash', '12-Feb-2026 11:20', 'Updated helpline contacts',
     'OHPC_Citizen_Charter_2026.pdf', 'PDF', 1200000, 'Regulatory', 'PUBLIC',
-    JSON.stringify(['public-charter', 'complaints', 'transparency']), 'HR', doc4Content,
+    JSON.stringify(['public-charter', 'complaints', 'transparency']), 'HR', doc4ContentV3,
+    null, null, null
+  );
+  versionStmt.run(
+    'doc-4', 'v2.0', 'Sasmita Dash', '15-Dec-2025 14:10', 'Revised grievance cell response times',
+    'OHPC_Citizen_Charter_2026.pdf', 'PDF', 1200000, 'Regulatory', 'PUBLIC',
+    JSON.stringify(['public-charter', 'complaints', 'transparency']), 'HR', doc4ContentV2,
+    null, null, null
+  );
+  versionStmt.run(
+    'doc-4', 'v1.0', 'Sasmita Dash', '10-Jan-2024 09:30', 'Initial release of OHPC Citizen Charter',
+    'OHPC_Citizen_Charter_2026.pdf', 'PDF', 1200000, 'Regulatory', 'PUBLIC',
+    JSON.stringify(['public-charter', 'complaints', 'transparency']), 'HR', doc4ContentV1,
     null, null, null
   );
 
   // 5. doc-5 (PUBLIC)
-  const doc5Content = `OHPC Hydro Power Operations & Safety Guidelines 2026.
+  const doc5ContentV2 = `OHPC Hydro Power Operations & Safety Guidelines 2026 (v2.0).
 Standard safety practices:
 1. Wear mandatory high-voltage protective gear in turbine galleries.
 2. Conduct daily reservoir level checks during monsoon peak discharge.
 3. Lock-out Tag-out (LOTO) verification before any penstock valve inspection.`;
 
+  const doc5ContentV1 = `OHPC Hydro Power Operations & Safety Guidelines (v1.0).
+Standard safety practices:
+1. Wear protective gear in turbine galleries.
+2. Conduct reservoir level checks.`;
+
   fileStmt.run(
     'doc-5', 'Hydro_Power_Safety_Guidelines_2026.pdf', 'PDF', 980000, 'Technical', 'Generation', 'PUBLIC',
-    JSON.stringify(['safety', 'guidelines', 'operations']), 'v1.0', 'published', null, 99,
+    JSON.stringify(['safety', 'guidelines', 'operations']), 'v2.0', 'published', null, 99,
     1767225600000, 1770024000000, 'System Administrator', 'root',
     'Standard electrical and physical safety guidelines for hydro electric power house operators at OHPC plants.',
     allDepts,
-    doc5Content,
+    doc5ContentV2,
     null, null, null
   );
   
   versionStmt.run(
-    'doc-5', 'v1.0', 'System Administrator', '01-Jan-2026 09:00', 'Initial safety guidelines publication',
+    'doc-5', 'v2.0', 'System Administrator', '01-Jan-2026 09:00', 'Added LOTO verification procedures',
     'Hydro_Power_Safety_Guidelines_2026.pdf', 'PDF', 980000, 'Technical', 'PUBLIC',
-    JSON.stringify(['safety', 'guidelines', 'operations']), 'Generation', doc5Content,
+    JSON.stringify(['safety', 'guidelines', 'operations']), 'Generation', doc5ContentV2,
+    null, null, null
+  );
+  versionStmt.run(
+    'doc-5', 'v1.0', 'System Administrator', '15-Nov-2025 10:15', 'Initial safety guidelines draft publication',
+    'Hydro_Power_Safety_Guidelines_2026.pdf', 'PDF', 980000, 'Technical', 'PUBLIC',
+    JSON.stringify(['safety', 'guidelines', 'operations']), 'Generation', doc5ContentV1,
     null, null, null
   );
 
@@ -286,26 +322,49 @@ Procedures:
   );
 
   // 8. doc-8 (PUBLIC)
-  const doc8Content = `Environmental Impact Assessment (EIA) for Reservoir Capacity Expansion.
+  const doc8ContentV1_2 = `Environmental Impact Assessment (EIA) for Reservoir Capacity Expansion (v1.2).
 Environmental Safeguards:
 - Wildlife sanctuary buffer zone preservation.
 - Pisciculture development in the reservoir basin.
 - Compensatory afforestation across 450 hectares of adjoining area.`;
 
+  const doc8ContentV1_1 = `Environmental Impact Assessment (EIA) for Reservoir Capacity Expansion (v1.1).
+Environmental Safeguards:
+- Wildlife sanctuary buffer zone preservation.
+- Pisciculture development in the reservoir basin.
+- Compensatory afforestation across 400 hectares.`;
+
+  const doc8ContentV1_0 = `Environmental Impact Assessment (EIA) for Reservoir Capacity Expansion (v1.0).
+Initial Safeguards Draft:
+- Wildlife sanctuary buffer zone.
+- Compensatory afforestation.`;
+
   fileStmt.run(
     'doc-8', 'OHPC_Environmental_Impact_Statement.pdf', 'PDF', 4500000, 'Regulatory', 'Generation', 'PUBLIC',
-    JSON.stringify(['environmental', 'eia', 'reservoir']), 'v1.0', 'published', null, 99,
+    JSON.stringify(['environmental', 'eia', 'reservoir']), 'v1.2', 'published', null, 99,
     1767225600000, 1770024000000, 'Sasmita Dash', 'root',
     'Reservoir ecosystem assessment and forest division clearances statement for the Balimela capacity enlargement works.',
     allDepts,
-    doc8Content,
+    doc8ContentV1_2,
     null, null, null
   );
   
   versionStmt.run(
-    'doc-8', 'v1.0', 'Sasmita Dash', '05-Mar-2026 10:00', 'Published environmental clearance report',
+    'doc-8', 'v1.2', 'Sasmita Dash', '05-Mar-2026 10:00', 'Updated afforestation zone map references',
     'OHPC_Environmental_Impact_Statement.pdf', 'PDF', 4500000, 'Regulatory', 'PUBLIC',
-    JSON.stringify(['environmental', 'eia', 'reservoir']), 'Generation', doc8Content,
+    JSON.stringify(['environmental', 'eia', 'reservoir']), 'Generation', doc8ContentV1_2,
+    null, null, null
+  );
+  versionStmt.run(
+    'doc-8', 'v1.1', 'Sasmita Dash', '20-Feb-2026 11:30', 'Revised reservoir catchment wildlife assessment',
+    'OHPC_Environmental_Impact_Statement.pdf', 'PDF', 4500000, 'Regulatory', 'PUBLIC',
+    JSON.stringify(['environmental', 'eia', 'reservoir']), 'Generation', doc8ContentV1_1,
+    null, null, null
+  );
+  versionStmt.run(
+    'doc-8', 'v1.0', 'Sasmita Dash', '01-Feb-2026 09:00', 'Published environmental clearance report',
+    'OHPC_Environmental_Impact_Statement.pdf', 'PDF', 4500000, 'Regulatory', 'PUBLIC',
+    JSON.stringify(['environmental', 'eia', 'reservoir']), 'Generation', doc8ContentV1_0,
     null, null, null
   );
 
