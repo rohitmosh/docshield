@@ -8,6 +8,9 @@ exports.encryptDocument = encryptDocument;
 exports.decryptDocument = decryptDocument;
 exports.sha256 = sha256;
 const crypto_1 = __importDefault(require("crypto"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const env_1 = require("../config/env");
 // Cached keypairs for master wrap operations and author signatures
 let masterPublicKey = '';
 let masterPrivateKey = '';
@@ -15,15 +18,40 @@ let masterPrivateKey = '';
 function initCryptoKeys() {
     if (masterPublicKey && masterPrivateKey)
         return;
-    console.log('Generating RSA-4096 Key Pair for Cryptographic Vault Wrapper...');
-    const { publicKey, privateKey } = crypto_1.default.generateKeyPairSync('rsa', {
-        modulusLength: 4096,
-        publicKeyEncoding: { type: 'spki', format: 'pem' },
-        privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-    });
-    masterPublicKey = publicKey;
-    masterPrivateKey = privateKey;
-    console.log('RSA Asymmetric Key Pair Generated.');
+    // Resolve keys directory from DB_PATH
+    const dbDir = path_1.default.isAbsolute(env_1.env.DB_PATH)
+        ? path_1.default.dirname(env_1.env.DB_PATH)
+        : path_1.default.resolve(__dirname, '../../', path_1.default.dirname(env_1.env.DB_PATH));
+    // Ensure DB and keys directory exists
+    if (!fs_1.default.existsSync(dbDir)) {
+        fs_1.default.mkdirSync(dbDir, { recursive: true });
+    }
+    const publicKeyPath = path_1.default.join(dbDir, 'master_public.pem');
+    const privateKeyPath = path_1.default.join(dbDir, 'master_private.pem');
+    if (fs_1.default.existsSync(publicKeyPath) && fs_1.default.existsSync(privateKeyPath)) {
+        console.log(`Loading existing RSA-4096 Key Pair from volume files: ${publicKeyPath} ...`);
+        masterPublicKey = fs_1.default.readFileSync(publicKeyPath, 'utf8');
+        masterPrivateKey = fs_1.default.readFileSync(privateKeyPath, 'utf8');
+        console.log('RSA Asymmetric Key Pair Loaded Successfully.');
+    }
+    else {
+        console.log('Generating RSA-4096 Key Pair for Cryptographic Vault Wrapper...');
+        const { publicKey, privateKey } = crypto_1.default.generateKeyPairSync('rsa', {
+            modulusLength: 4096,
+            publicKeyEncoding: { type: 'spki', format: 'pem' },
+            privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+        });
+        masterPublicKey = publicKey;
+        masterPrivateKey = privateKey;
+        try {
+            fs_1.default.writeFileSync(publicKeyPath, publicKey, 'utf8');
+            fs_1.default.writeFileSync(privateKeyPath, privateKey, 'utf8');
+            console.log(`RSA Asymmetric Key Pair Generated and Persisted to: ${publicKeyPath}`);
+        }
+        catch (err) {
+            console.error('Warning: Failed to persist RSA keys to disk. Keys remain in-memory only.', err);
+        }
+    }
 }
 /**
  * Executes a full security envelope on the document content block:

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { User } from '../types';
 import { useNotification } from './NotificationContext';
 
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api/v1' : 'http://localhost:5001/api/v1');
+
 const DEFAULT_ANONYMOUS: User = {
   id: 'anonymous',
   name: 'Public Visitor',
@@ -44,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = useCallback(async (roleKey: string | null, username: string | null): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:5001/api/v1/auth/login', {
+      const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ roleKey, username })
@@ -94,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       headers
     };
 
-    const response = await fetch(`http://localhost:5001/api/v1${url}`, mergedOptions);
+    const response = await fetch(`${API_BASE}${url}`, mergedOptions);
     
     if (response.status === 401) {
       // Token expired or invalid

@@ -1,0 +1,25 @@
+# Dependency directories
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production secret environments
+.env
+.env.production
+server/.env
+
+# Builds
+dist/
+client/dist/
+server/dist/
+
+# SQLite databases and local keys
+*.db
+*.db-journal
+server/*.db
+server/master_public.pem
+server/master_private.pem
+
+# OS metadata
+.DS_Store
+Thumbs.db

@@ -1,4 +1,7 @@
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { env } from '../config/env';
 
 // Cached keypairs for master wrap operations and author signatures
 let masterPublicKey: string = '';
@@ -8,16 +11,43 @@ let masterPrivateKey: string = '';
 export function initCryptoKeys() {
   if (masterPublicKey && masterPrivateKey) return;
 
-  console.log('Generating RSA-4096 Key Pair for Cryptographic Vault Wrapper...');
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-    modulusLength: 4096,
-    publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
-  });
+  // Resolve keys directory from DB_PATH
+  const dbDir = path.isAbsolute(env.DB_PATH)
+    ? path.dirname(env.DB_PATH)
+    : path.resolve(__dirname, '../../', path.dirname(env.DB_PATH));
 
-  masterPublicKey = publicKey;
-  masterPrivateKey = privateKey;
-  console.log('RSA Asymmetric Key Pair Generated.');
+  // Ensure DB and keys directory exists
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+
+  const publicKeyPath = path.join(dbDir, 'master_public.pem');
+  const privateKeyPath = path.join(dbDir, 'master_private.pem');
+
+  if (fs.existsSync(publicKeyPath) && fs.existsSync(privateKeyPath)) {
+    console.log(`Loading existing RSA-4096 Key Pair from volume files: ${publicKeyPath} ...`);
+    masterPublicKey = fs.readFileSync(publicKeyPath, 'utf8');
+    masterPrivateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    console.log('RSA Asymmetric Key Pair Loaded Successfully.');
+  } else {
+    console.log('Generating RSA-4096 Key Pair for Cryptographic Vault Wrapper...');
+    const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+      modulusLength: 4096,
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+    });
+
+    masterPublicKey = publicKey;
+    masterPrivateKey = privateKey;
+
+    try {
+      fs.writeFileSync(publicKeyPath, publicKey, 'utf8');
+      fs.writeFileSync(privateKeyPath, privateKey, 'utf8');
+      console.log(`RSA Asymmetric Key Pair Generated and Persisted to: ${publicKeyPath}`);
+    } catch (err) {
+      console.error('Warning: Failed to persist RSA keys to disk. Keys remain in-memory only.', err);
+    }
+  }
 }
 
 export interface EncryptedPayload {
